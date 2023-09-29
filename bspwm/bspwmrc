@@ -1,0 +1,51 @@
+#! /bin/sh
+
+picom -f &
+nitrogen --restore &
+pgrep -x sxhkd > /dev/null || sxhkd &
+
+
+xrandr --output eDP-1 --primary --mode 1920x1080 --pos 5120x360 --rotate normal --output HDMI-1 --mode 2560x1440 --pos 2560x0 --rotate normal --output DP-1 --mode 2560x1440 --pos 0x0 --rotate normal
+
+#xrandr --output eDP-1 --primary --mode 1920x1080 --pos 2560x360 --rotate normal --output HDMI-1 --mode 2560x1440 --pos 0x0 --rotate normal --output DP-1 --off
+# xrandr -s 1920x1080
+
+bspc monitor eDP-1 -d 1 2 3 4   
+bspc monitor HDMI-1 -d 1 2 3 4 
+bspc monitor DP-1 -d 1 2 3 4 
+
+bspc config border_width        1
+bspc config window_gap          8
+
+bspc config top_padding 		0        
+bspc config bottom_padding 		0        
+bspc config left_padding 		0        
+bspc config right_padding 		0        
+
+bspc rule -a Emacs state=tiled
+bspc rule -a Zathura state=tiled
+bspc config split_ratio          0.55
+bspc config borderless_monocle   true
+bspc config gapless_monocle      true
+
+#firefox setup for fullscrevideo:  full-screen-api.ignore-widgets all 
+
+# bspc rule -a Gimp desktop='^3' state=floating follow=on
+bspc rule -a Gimp desktop='^8' 
+bspc rule -a Emacs desktop='^5'
+bspc rule -a Chromium desktop='^6'
+bspc rule -a mplayer2 state=floating
+bspc rule -a Kupfer.py focus=on
+bspc rule -a Screenkey manage=off
+
+pkill polybar
+~/.config/polybar/launch.sh --shades &
+
+gsettings set org.gnome.desktop.session idle-delay 0 #screeen
+# wmname LG3D    #to enablepycharm
+
+# bspc rule -a "glue" sticky=on
+xmodmap ~.xmodpam &  # keymap, replace Capslock with Ctr.
+dropbox start &
+chromium &
+emacs &

@@ -1,0 +1,4 @@
+#!/bin/sh
+setxkbmap us -variant colemak_dh
+setxkbmap -option caps:backspace
+xmodmap -e "clear Lock"

@@ -1,0 +1,50 @@
+#!/bin/bash
+start_workflow() {
+    [ ! command -v xdotool &> /dev/null ] && echo "xdotool not found." && return 1
+    for i in {1..5}; do 
+        xdotool key "super+$i"
+        sleep 1
+        emacs &
+        sleep 1
+    done
+
+    xdotool key "super+6"
+    sleep 1
+    thunderbird &
+    sleep 1
+    chromium --kiosk  &
+    leep 2
+    xdotool key "super+7"
+    sleep 1
+    thunar &
+    sleep 1
+    zoom &
+    sleep 2
+
+    xdotool key "super+8"
+    leep 1
+    chromium --kiosk &
+    leep 1
+    brave-browser --kiosk &
+    leep 1
+
+    xdotool key "super+9"
+    leep 1
+    alacritty &
+    sleep 1
+    start_tmux_session
+}
+
+start_tmux_session() {
+    [ ! command -v tmux &> /dev/null ] && echo "tmux not found." && return 1
+
+    tmux new-session -d -s my_session -n 'DUMMY' 'sleep 1'
+    windows=("RESEARCH" "CODE" "TEX" "TESTIN" "BTOP" "CONF" "SYS" "GIT" "TEACH")
+    for win in "${windows[@]}"; do 
+        tmux new-window -t my_session -n "$win"
+    done
+    tmux kill-window -t my_session:0
+    tmux attach -t my_session
+}
+
+start_workflow
