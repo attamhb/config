@@ -1,26 +1,13 @@
-#+TITLE: BASHRC Config
-#+PROPERTY: header-args :tangle ~/.bashrc
-#+STARTUP: showeverything
-#+AUTHOR: ATTA
-
-* Initial Checks
-#+BEGIN_SRC bash
 case $- in
-    ,*i*) ;;
-      ,*) return;;
+    *i*) ;;
+      *) return;;
 esac
-#+END_SRC
 
-* History Configuration
-#+BEGIN_SRC bash
 HISTCONTROL=ignoreboth
 shopt -s histappend
 HISTSIZE=1000
 HISTFILESIZE=2000
-#+END_SRC
 
-* Window Size and Check
-#+BEGIN_SRC bash
 shopt -s checkwinsize
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
@@ -29,10 +16,7 @@ fi
 case "$TERM" in
     xterm-color|*-256color) color_prompt=yes;;
 esac
-#+END_SRC
 
-* Prompt Color Configuration
-#+BEGIN_SRC bash
 force_color_prompt=yes
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
@@ -51,7 +35,7 @@ case "$TERM" in
 xterm*|rxvt*)
     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
     ;;
-,*)
+*)
     ;;
 esac
 if [ -x /usr/bin/dircolors ]; then
@@ -61,10 +45,7 @@ if [ -x /usr/bin/dircolors ]; then
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
 fi
-#+END_SRC
 
-* Aliases and Completion Features
-#+BEGIN_SRC bash
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
@@ -80,4 +61,3 @@ if ! shopt -oq posix; then
   fi
 fi
 source ~/.myaliasrc
-#+END_SRC

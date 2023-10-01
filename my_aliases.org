@@ -27,8 +27,9 @@ alias .4='cd ../../../..'
 alias .5='cd ../../../../..'
 alias cdrr='cd ~/Dropbox/research/clustering_particles/density_estimation'
 alias cdr='cd ~/Dropbox/research'
-alias cdcal='cdmat  ~/Dropbox/mat265'
+alias cdcal='cdmat  ~/Dropbox/mat'
 alias cdw='cd  ~/Downloads'
+alias cdb='cd  ~/Dropbox/'
 alias cdbf='cd  ~/Dropbox/config'
 #+END_SRC
 
@@ -63,11 +64,6 @@ alias emnw='emacs -nw &'
 alias em='emacs'
 alias emc="emacsclient -c -a 'emacs'"
 alias va='vim ~/.config/alacritty/alacritty.yml'
-alias vals='vim ~/.dotfiles/aliasrc'
-alias vtm='vim ~/.tmux.conf'
-alias vv='vim ~/.vimrc'
-alias vvm='vim ~/.vimrc'
-alias vmx='vim ~/.xmonad/xmonad.hs'
 #+END_SRC
 
 * Search and Grep
@@ -124,7 +120,8 @@ alias tofish="sudo chsh $USER -s /bin/fish && echo 'Now log out.'"
 #+BEGIN_SRC bash
 alias doas="doas --"
 alias tm='tmux'
-alias tmc='tm kill-session'
+alias tmkn='tmux kill-session'
+alias tmkr='tmux kill-server'
 alias msq='mysql -u root -p'
 alias ytm='youtube-music-desktop-app'
 alias pga='cd /usr/pgadmin4/bin && ./pgadmin4'

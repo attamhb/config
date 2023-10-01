@@ -1,164 +1,67 @@
-alacritty
-alsa-tools-gui
-alsa-ucm-conf
-arandr
-ark
-aspell
-base-passwd
-bash-completion
-blueman
-bluez
-bluez-alsa-utils
-bluez-btsco
-bluez-cups
-bluez-firmware
-bluez-hcidump
-bluez-meshd
-bluez-obexd
-bluez-tests
-bluez-tools
-brave-browser
-btop
-budgie-network-manager-applet
-build-essential
-chromium-browser
-clisp
-cmake
-code
-coreutils
-cpu-checker
-curl
-dropbox
-emacs
-feh
-findutils
-firefox
-flameshot
-fonts-firacode
-fonts-indic
-fortune-mod
-fwupd
-fwupd-signed
-g++
-gcc
-gdal-data
-gedit
-gimp
-git
+brave-browser #yay -S brave-bin
+chromium-browser firefox
+
+zoom dropbox #(yay)
+
+alacritty zsh bash-completion blueman bluez
+
+btop htop neofetch
+
+clisp cmake
+
+code emacs gedit neovim vim
+
+curl wget
+
+nitrogen feh flameshot shotwell shutter xmobar xmonad arandr
 gnome-multi-writer
-gnupg
-gperf
-grep
-gzip
-haskell-platform
-haskell-stack
-htop
-inetutils-tools
-init
-initramfs-tools
-inkscape
-intel-media-va-driver
-intltool
-iperf
-ipython3
-jupyter-core
-language-pack-en
-language-pack-en-base
+
+# fonts-firacode fonts-indic
+
+# fwupd
+# fwupd-signed
+# gcc
+
+# gdal-data
+gimp inkscape
+git
+haskell-platform haskell-stack
+
+
+intltool iperf
+
+ipython3 jupyter-core language-pack-en language-pack-en-base
 locate
-lxappearance
-lynx
-make
-miio-tools
-mokutil
-muon
-mysql-server
-ncdu
-neofetch
-neovim
-neovim-runtime
+lxappearance qt5ct
 net-tools
-network-manager
-nitrogen
-nodejs
-npm
-okular
-openssh-client
-openssh-server
+npm okular arandr zathura
+openssh-client openssh-server
 os-prober
-pavucontrol
-picom
+pavucontrol picom pulseaudio
 postgresql
-postgresql-common
-postgresql-plpython3-13
-pulseaudio
-python2
-python3
-python3-asciitree
-python3-cwiid
-python3-dev
-python3-gdbm
-python3-gpg
-python3-libiio
-python3-miio
-python3-neovim
-python3-numpy
-python3-pip
-python3-sklearn
-python3-sklearn-lib
-python3-speechd
-python3-tk
-python3-tz
-qt5ct
-redshift
-rig
-ripgrep
-rubber
-rxvt-unicode
-sddm
-shotwell
-shutter
-snapd
-speedtest-cli
-ssh
-suckless-tools
-sweeper
-systemd
-telnet
-texlive-full
-texmaker
-thunar
-thunderbird-locale-en
-thunderbird-locale-en-us
+# postgresql-common postgresql-plpython3-13
+python2 python3
+# python3-asciitree python3-cwiid python3-dev python3-gdbm
+# python3-gpg python3-libiio python3-miio python3-neovim
+# python3-numpy python3-pip
+# python3-sklearn python3-sklearn-lib python3-speechd
+# python3-tk python3-tz
+# redshift
+rubber rxvt-unicode
+# suckless-tools
+# sweeper
+# systemd
+# telnet
+texlive-full texmaker
+# thunar
+thunderbird
+
 timeshift
-tmux
-tree
-vifm
-vim
-vim-gtk
-vim-gui-common
-virtualbox
-vlc
-vlc-plugin-qt
-wget
+tmux tree vifm vim 
+virtualbox vlc
 x11-apps
-xbacklight
-xdotool
-xfce4-power-manager
-xfce4-terminal
-xmobar
-xmonad
-xournal
+xbacklight xdotool
 xournalpp
-xscreensaver
-xscreensaver-data-extra
-xscreensaver-gl-extra
-xserver-xorg
-xserver-xorg-input-xwiimote
-xterm
-xwayland
-xwiimote
-xz-utils
-zathura
-zlib1g-dev
-zoom
+xscreensaver xscreensaver-data-extra xscreensaver-gl-extra xserver-xorg xserver-xorg-input-xwiimote
+
 zsh
