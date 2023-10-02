@@ -46,6 +46,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
     , ((modm,               xK_p     ), spawn "dmenu_run")
+    , ((modm .|. shiftMast, xK_p     ), spawn "j4-dmenu-desktop")
 -------------------------------------------------------------------- 
     --, ((modm .|. shiftMask, xK_x     ), spawn "")
     --, ((modm .|. shiftMask, xK_x     ), spawn "thunderbird")
@@ -53,7 +54,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_h     ), spawn "alacritty")
     , ((modm .|. shiftMask, xK_x     ), spawn "lxappearance")
     , ((modm .|. shiftMask, xK_v     ), spawn "thunderbird")
-    , ((modm .|. shiftMask, xK_p     ), spawn "pavucontrol")
+    --, ((modm .|. shiftMask, xK_p     ), spawn "pavucontrol")
     , ((modm .|. shiftMask, xK_f     ), spawn "thunar")
     , ((modm .|. shiftMask, xK_z     ), spawn "zoom")
     , ((modm .|. shiftMask, xK_y     ), spawn "youtube-music-desktop-app")
@@ -63,7 +64,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_s     ), spawn "inkscape")
     , ((modm .|. shiftMask, xK_a     ), spawn "gnome-calendar")
     , ((modm .|. shiftMask, xK_g     ), spawn "chromium --kiosk")
-    , ((modm,               xK_g     ), spawn "brave-browser --kiosk")
+    , ((modm,               xK_g     ), spawn "brave --kiosk")
     , ((modm .|. shiftMask, xK_b     ), spawn "firefox")
     , ((modm,               xK_b     ), spawn "librewolf")
     , ((modm,               xK_v     ), spawn "virtualbox")
@@ -170,7 +171,7 @@ myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
      nmaster = 1
 
      -- Default proportion of screen occupied by master pane
-     ratio   = 1/2
+     ratio   = 3/5
 
      -- Percent of screen to increment by when resizing panes
      delta   = 1/100
@@ -313,7 +314,7 @@ help = unlines ["The default modifier key is 'alt'. Default keybindings:",
     "-- launching and killing programs",
     "mod-Shift-Enter  Launch xterminal",
     "mod-p            Launch dmenu",
-    "mod-Shift-p      Launch gmrun",
+    "mod-Shift-p      Launch j4-dmenu-desktop",
     "mod-Shift-c      Close/kill the focused window",
     "mod-Space        Rotate through the available layout algorithms",
     "mod-Shift-Space  Reset the layouts on the current workSpace to default",

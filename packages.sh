@@ -64,4 +64,3 @@ xbacklight xdotool
 xournalpp
 xscreensaver xscreensaver-data-extra xscreensaver-gl-extra xserver-xorg xserver-xorg-input-xwiimote
 
-zsh
