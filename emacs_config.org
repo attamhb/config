@@ -889,13 +889,11 @@
 ** Global Key Bindings
 #+BEGIN_SRC elisp
 (global-set-key (kbd "C-c t") 'toggle-transparency)
-
 (global-set-key (kbd "<f1>") (lambda() (interactive) (find-file "~/Dropbox/mat265/")))
 (global-set-key (kbd "<f2>") (lambda() (interactive) (find-file "~/Dropbox/GTD.org")))
-(global-set-key (kbd "<f3>") (lambda() (interactive) (find-file "~/.config/")))
+(global-set-key (kbd "<f3>") (lambda() (interactive) (find-file "~/Dropbox/config/")))
 (global-set-key (kbd "<f4>") (lambda() (interactive) (find-file "~/Dropbox/research/clustering_particles/density_estimation")))
-(global-set-key (kbd "<f5>") (lambda() (interactive) (find-file "~/.dotfiles/")))
-(global-set-key (kbd "<f6>") (lambda() (interactive) (find-file "~/Dropbox/projects/")))
+(global-set-key (kbd "<f5>") (lambda() (interactive) (find-file "~/Dropbox/projects/")))
 #+END_SRC
 
 

@@ -46,7 +46,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
     , ((modm,               xK_p     ), spawn "dmenu_run")
-    , ((modm .|. shiftMast, xK_p     ), spawn "j4-dmenu-desktop")
+    , ((modm .|. shiftMask, xK_p     ), spawn "j4-dmenu-desktop")
 -------------------------------------------------------------------- 
     --, ((modm .|. shiftMask, xK_x     ), spawn "")
     --, ((modm .|. shiftMask, xK_x     ), spawn "thunderbird")
