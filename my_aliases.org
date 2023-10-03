@@ -126,4 +126,6 @@ alias msq='mysql -u root -p'
 alias ytm='youtube-music-desktop-app'
 alias pga='cd /usr/pgadmin4/bin && ./pgadmin4'
 alias myspace='/media/$USER/be0f0e8d-c893-48ef-9ed0-762387823e66'
+alias brave='brave-browser --kiosk'
+alias tcrm='trash-put'
 #+END_SRC

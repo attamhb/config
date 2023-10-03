@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name:python sr
+# key:srp 
+# --
+
+#+BEGIN_SRC python3
+
+   $0
+
+#+BEGIN_SRC 
