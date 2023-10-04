@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name:src_code_bash
+# key:srb
+# --
+
+#+BEGIN_SRC bash
+
+${code}
+
+#+END_SRC python
