@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name:begin_proof 
+# key:prf
+# --
+\begin{proof}${[1]}
+${0}
+\end{proof}

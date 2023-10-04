@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name:left_par 
+# key:lpr 
+# --
+\( $1 \) $0

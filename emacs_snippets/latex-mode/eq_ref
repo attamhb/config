@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name:eq_refer 
+# key:erf 
+# --
+\eqref{$0}

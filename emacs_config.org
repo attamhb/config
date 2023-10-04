@@ -8,6 +8,13 @@
 
 ** User Initialization Directory Setup
 #+BEGIN_SRC elisp
+(defun load-my-init-file ()
+  
+  (interactive)
+  (load-file "~/.emacs.d/init.el")
+  (message "init.el reloaded successfully!"))
+
+  (setq gc-cons-threshold (* 100 1000 1000))
   (defconst user-init-dir
     (cond
      ((boundp 'user-emacs-directory) user-emacs-directory)
@@ -68,8 +75,8 @@
 (global-display-fill-column-indicator-mode t)
 (line-number-mode 1) 
 (column-number-mode 0)
+(electric-pair-mode  1)
 #+END_SRC 
-
 ** UI Elements Control
 #+BEGIN_SRC elisp
 (tooltip-mode 0)
@@ -179,7 +186,8 @@
 
 (use-package doom-themes 
   :init
-  (load-theme 'doom-palenight t))
+  (load-theme 'doom-tomorrow-night t))
+  ;; (load-theme 'doom-palenight t)
 
 
 (use-package rainbow-delimiters 
@@ -187,6 +195,8 @@
 
 
 #+END_SRC   
+
+#+RESULTS:
 
 
 
@@ -365,6 +375,16 @@
   :diminish
   :config)
 #+END_SRC
+
+**  Yamal
+#+BEGIN_SRC elisp
+(unless (package-installed-p 'yaml-mode)
+  (package-refresh-contents)
+  (package-install 'yaml-mode))
+
+(add-to-list 'org-src-lang-modes '("yaml" . yaml))
+
+#+end_SRC elisp
 
 *** Helpful
 #+BEGIN_SRC elisp
@@ -579,23 +599,35 @@
 **  PYTHON
 
 #+BEGIN_SRC   elisp   
-(use-package python-mode
-  :hook
-  (python-mode . flycheck-mode)
-  (python-mode . company-mode)
-  (python-mode . blacken-mode)
-  (python-mode . yas-minor-mode)
-  :custom
-  (python-shell-interpreter "python3") 
+    (use-package python-mode
+      :hook
+      (python-mode . flycheck-mode)
+      (python-mode . company-mode)
+      (python-mode . blacken-mode)
+      (python-mode . yas-minor-mode)
+      :custom
+      (python-shell-interpreter "python3") 
+      :config
+      )
+
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable)
   :config
+  ;; Use IPython for REPL
+  (setq elpy-shell-interactive-shell-command "ipython3")
+  (setq elpy-shell-interactive-shell-args '("--simple-prompt" "-i"))
+  ;; If you want Elpy to use a different python, set it here
+  ;; (setq elpy-rpc-python-command "path/to/python")
   )
 
-
-(use-package pyvenv
-  :defer t
-  :hook (pyvenv-mode . python-mode)
-  :config
-  (pyvenv-mode 1))
+  
+    (use-package pyvenv
+      :defer t
+      :hook (pyvenv-mode . python-mode)
+      :config
+      (pyvenv-mode 1))
   
 
 
@@ -649,7 +681,9 @@
 
 (org-babel-do-load-languages
  'org-babel-load-languages
- '((R . t)
+ '(
+   (R . t)
+   (C . t)
    (python . t) 
    (shell . t) 
    (haskell . t) 
@@ -666,6 +700,14 @@
   (font-lock-add-keywords 'org-mode
                           '(("^ *\\([-]\\) "
                              (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+(let ((background-color (face-attribute 'default :background)))
+  (set-face-attribute 'org-block-begin-line nil
+                      :foreground background-color
+                      :background background-color)
+  (set-face-attribute 'org-block-end-line nil
+                      :foreground background-color
+                      :background background-color))
 
   ;; Set faces for heading levels
   (dolist (face '((org-level-1 . 1.2)
@@ -721,31 +763,48 @@
 
 ** PDF Tools
 #+BEGIN_SRC elisp
-(use-package pdf-tools
-  :magic ("%PDF" . pdf-view-mode)
-  :config
-  (pdf-tools-install)
-  (setq-default pdf-view-display-size 'fit-page))
+  (use-package pdf-tools
+    :ensure t
+    :magic ("%PDF" . pdf-view-mode)
+    :config
+    (pdf-tools-install)
+    (setq-default pdf-view-display-size 'fit-page))
+
 #+END_SRC
 
 ** AUCTeX
 #+BEGIN_SRC elisp
-(use-package auctex
+  (use-package auctex
+    :ensure t
+    :defer t
+    :hook (LaTeX-mode . (lambda ()
+                          (push (list 'output-pdf "Zathura")
+                                TeX-view-program-selection)))
+          (LaTeX-mode . turn-on-prettify-symbols-mode))
+
+  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+        TeX-source-correlate-start-server t)
+
+  (add-hook 'TeX-after-compilation-finished-functions
+            #'TeX-revert-document-buffer)
+
+  (put 'LaTeX-narrow-to-environment 'disabled nil)
+
+  (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
+
+  ;; (use-package helm-bibtex
+  ;; :ensure t
+  ;; :bind ("C-c b" . helm-bibtex)
+  ;; :config
+  ;; (setq bibtex-completion-bibliography '("/path/to/your/bibfile.bib")))
+(use-package latex-extra
   :ensure t
-  :defer t
-  :hook (LaTeX-mode . (lambda ()
-                        (push (list 'output-pdf "Zathura")
-                              TeX-view-program-selection)))
-        (LaTeX-mode . turn-on-prettify-symbols-mode))
+  :hook (LaTeX-mode . latex-extra-mode))
 
-(setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-      TeX-source-correlate-start-server t)
 
-(add-hook 'TeX-after-compilation-finished-functions
-          #'TeX-revert-document-buffer)
-
-(put 'LaTeX-narrow-to-environment 'disabled nil)
 #+END_SRC
+
+
 
 ** CDLaTeX
 #+BEGIN_SRC elisp
@@ -758,7 +817,20 @@
 ** Company Math
 #+BEGIN_SRC elisp
 (use-package company-math)
-  ;; :hook (LaTeX-mode . company-math)
+
+(use-package company-auctex
+:ensure t
+:init
+(company-auctex-init))
+
+(use-package latex-preview-pane
+  :ensure t)
+
+(use-package magic-latex-buffer
+  :ensure t
+  :hook (TeX-update-style . magic-latex-buffer))
+
+    ;; :hook (LaTeX-mode . company-math)
 #+END_SRC
 
 ** LaTeX Auto-Activation Snippets (laas)
@@ -866,25 +938,27 @@
 
 ** Leader Key Bindings
 #+BEGIN_SRC elisp
-(rune/leader-keys
-  "sq" '(sql-postgres :which-key "sql-postgres")
-  "ww" '(evil-window-next :which-key "evil-window-next")
-  "mm" '(markdown-mode :which-key "markdown-mode")
-  "mv" '(markdown-view-mode :which-key "markdown-view-mode")
-  "ts" '(hydra-text-scale/body :which-key "scale text")
-  "cc" '(TeX-command-run-all :which-key "Tex-command-run-all")
-  "cb" '(kill-this-buffer :which-key "kill-this-buffer")
-  "cn" '(global-display-line-numbers-mode :which-key "global-display-number-mode")
-  "tm" '(vterm :which-key "vterm")
-  "ss" '(sly :which-key "sly")
-  "cl" '(global-display-fill-column-indicator-mode :which-key "global-display-fill-column-indicator-mode")
-  "bm" '(blacken-mode :which-key "blacken-mode")
-  "tc" '(TeX-clean :which-key "TeX-clean")
-  "lb" '(list-buffers :which-key "list-buffers")
-  "tp" '(transparency :which-key "transparency")
-  "bf" '(eval-buffer :which-key "eval-buffer")
-)
+  (rune/leader-keys
+    "sq" '(sql-postgres :which-key "sql-postgres")
+    "ww" '(evil-window-next :which-key "evil-window-next")
+    "mm" '(markdown-mode :which-key "markdown-mode")
+    "mv" '(markdown-view-mode :which-key "markdown-view-mode")
+    "ts" '(hydra-text-scale/body :which-key "scale text")
+    "cc" '(TeX-command-run-all :which-key "Tex-command-run-all")
+    "cb" '(kill-this-buffer :which-key "kill-this-buffer")
+    "cn" '(global-display-line-numbers-mode :which-key "global-display-number-mode")
+    "tm" '(vterm :which-key "vterm")
+    "ss" '(sly :which-key "sly")
+    "cl" '(global-display-fill-column-indicator-mode :which-key "global-display-fill-column-indicator-mode")
+    "bm" '(blacken-mode :which-key "blacken-mode")
+    "tc" '(TeX-clean :which-key "TeX-clean")
+    "lb" '(list-buffers :which-key "list-buffers")
+    "tp" '(transparency :which-key "transparency")
+    "bf" '(eval-buffer :which-key "eval-buffer")
+    "yns" '(yas-new-snippet :which-key "yas-new-snippet")
+    )
 #+END_SRC
+
 
 ** Global Key Bindings
 #+BEGIN_SRC elisp
@@ -940,5 +1014,29 @@
   (add-hook mode (lambda ()
                    (display-line-numbers-mode -1))))
 #+END_SRC
+
+* TESTING 
+#+BEGIN_SRC elisp      
+  (defun tidy-org-buffer ()
+    (interactive)
+    (goto-char (point-min))
+    (while (not (eobp))
+      (org-table-align)
+      (forward-line)))
+
+
+(defun org-align-source-blocks ()
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "^\\s-+\\(#\\+BEGIN_SRC\\)" nil t)
+      (replace-match "\\1"))))
+
+  
+#+END_SRC   
+
+#+RESULTS:
+: org-align-source-blocks
+
 
 

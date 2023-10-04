@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name:pd.reea_csv
+# key:pdcsv
+# --
+pd.read_csv("$1")
+$O

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name:align_env_star 
+# key:als 
+# --
+\begin{align*}
+${0}
+\end{align*}
