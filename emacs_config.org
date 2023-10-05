@@ -2,6 +2,9 @@
 #+PROPERTY: header-args :tangle ~/.emacs.d/init.el
 #+STARTUP: showeverything
 #+AUTHOR: ATTA
+#+OPTIONS: toc:2
+
+* Table of Contents :toc:
 
 
 * Initialization and Configuration
@@ -72,7 +75,7 @@
 (setq-default line-spacing 2)
 (global-display-line-numbers-mode t)
 (setq display-line-numbers-type 'relative)
-(global-display-fill-column-indicator-mode t)
+(global-display-fill-column-indicator-mode 0)
 (line-number-mode 1) 
 (column-number-mode 0)
 (electric-pair-mode  1)
@@ -142,7 +145,7 @@
 (add-hook 'emacs-startup-hook #'efs/display-startup-time)
 #+END_SRC 
 
-**  TRANSPARENCY
+** TRANSPARENCY
 
 #+BEGIN_SRC   elisp   
 (defun toggle-transparency ()
@@ -164,7 +167,7 @@
 (transparency 90)
 #+END_SRC   
 
-**  THEME
+** THEME
 
 #+BEGIN_SRC   elisp   
 (use-package beacon
@@ -186,8 +189,8 @@
 
 (use-package doom-themes 
   :init
-  (load-theme 'doom-tomorrow-night t))
-  ;; (load-theme 'doom-palenight t)
+  ;; (load-theme 'doom-tomorrow-night t))
+  (load-theme 'doom-palenight t)
 
 
 (use-package rainbow-delimiters 
@@ -1035,8 +1038,16 @@
   
 #+END_SRC   
 
-#+RESULTS:
-: org-align-source-blocks
+#+BEGIN_SRC elisp
+
+(use-package toc-org
+     :commands toc-org-enable
+     :init (add-hook 'org-mode-hook 'toc-org-enable))
+
+#+END_SRC python
+ 
+
+
 
 
 

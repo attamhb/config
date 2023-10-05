@@ -4,9 +4,7 @@
 #+AUTHOR: ATTA
 
 
-# #+END_SRC 
 
-# #+BEGIN_SRC yaml
 
 *   Environment
 #+BEGIN_SRC yaml
@@ -28,7 +26,7 @@ window:
   dynamic_padding: false
   opacity: 0.85
   decorations: none
-  startup_mode: Fullscreen
+  #startup_mode: Fullscreen
   title: Alacritty
   class:
     instance: Alacritty
