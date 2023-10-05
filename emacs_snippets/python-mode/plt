@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name:plt.plot 
+# key:plt 
+# --
+import motplotlib.pyplot as plt
+${0}

@@ -2,97 +2,82 @@
 #+PROPERTY: header-args :tangle ~/.emacs.d/init.el
 #+STARTUP: showeverything
 #+AUTHOR: ATTA
-#+OPTIONS: toc:2
-
-* Table of Contents :toc:
 
 
 * Initialization and Configuration
 
-** User Initialization Directory Setup
 #+BEGIN_SRC elisp
-(defun load-my-init-file ()
-  
-  (interactive)
-  (load-file "~/.emacs.d/init.el")
-  (message "init.el reloaded successfully!"))
-
   (setq gc-cons-threshold (* 100 1000 1000))
-  (defconst user-init-dir
-    (cond
-     ((boundp 'user-emacs-directory) user-emacs-directory)
-     ((boundp 'user-init-directory) user-init-directory)
-     (t "~/.emacs.d/")))
-
-  (defun load-user-file (file)
-    "Load a file in current user's configuration directory."
-    (interactive "f")
-    (load-file (expand-file-name file user-init-dir)))
 #+END_SRC
 
-** Handling custom.el
+** Package Archives Configuration and  Use-Package Initialization
 
 #+BEGIN_SRC elisp
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(when (file-exists-p custom-file)
-  (load custom-file))
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (when (file-exists-p custom-file)
+    (load custom-file))
+
+  (require 'package)
+  (setq package-archives 
+        '(("melpa" . "https://melpa.org/packages/")
+          ("melpa-stable" . "https://stable.melpa.org/packages/")
+          ("org" . "https://orgmode.org/elpa/")
+          ("elpa" . "https://elpa.gnu.org/packages/")))
+
+  (package-initialize)
+  (setq gc-cons-threshold (* 50 1000 1000))
+
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+
+  (require 'use-package)
+  (setq use-package-always-ensure 't)
 #+END_SRC
 
-** Package Archives Configuration
-
-#+BEGIN_SRC elisp
-(require 'package)
-(setq package-archives 
-      '(("melpa" . "https://melpa.org/packages/")
-        ("melpa-stable" . "https://stable.melpa.org/packages/")
-        ("org" . "https://orgmode.org/elpa/")
-        ("elpa" . "https://elpa.gnu.org/packages/")))
-
-(package-initialize)
-(setq gc-cons-threshold (* 50 1000 1000))
-#+END_SRC
-
-** Use-Package Initialization
-
-#+BEGIN_SRC elisp
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(require 'use-package)
-(setq use-package-always-ensure 't)
-#+END_SRC
 
 
 * Appearance Configuration
 
-** Font and Text Display
+** Text Display and UI Elements Control
 #+BEGIN_SRC elisp
-(set-face-attribute 'default nil
-                    :font "Fira Code Retina"
-                    :height 170)
-(setq-default fill-column 80)
-(setq-default line-spacing 2)
-(global-display-line-numbers-mode t)
-(setq display-line-numbers-type 'relative)
-(global-display-fill-column-indicator-mode 0)
-(line-number-mode 1) 
-(column-number-mode 0)
-(electric-pair-mode  1)
-#+END_SRC 
-** UI Elements Control
-#+BEGIN_SRC elisp
-(tooltip-mode 0)
-(tool-bar-mode 0)
-(scroll-bar-mode 0)
-(blink-cursor-mode 0)
-(setq use-dialog-box nil)
-(set-fringe-mode 0)
-(menu-bar-mode 0)
+  (set-face-attribute 'default nil
+                      :font "Fira Code Retina"
+                      :height 170)
+  (setq-default fill-column 80)
+  (setq-default line-spacing 2)
+  (global-display-line-numbers-mode t)
+  (setq display-line-numbers-type 'relative)
+  (global-display-fill-column-indicator-mode 0)
+  (line-number-mode 1) 
+  (column-number-mode 0)
+  (electric-pair-mode  1)
+  (tooltip-mode 0)
+  (tool-bar-mode 0)
+  (scroll-bar-mode 0)
+  (blink-cursor-mode 0)
+  (setq use-dialog-box nil)
+  (set-fringe-mode 0)
+  (menu-bar-mode 0)
+  (setq use-dialog-box nil)
+
+  (savehist-mode 1)
+  (save-place-mode 1)
+  (setq history-length 25)
+  (global-auto-revert-mode 1)
+
+  (setq inhibit-startup-message t
+        initial-major-mode 'org-mode
+        initial-buffer-choice "~/Dropbox/GTD.org")
+
+  (setq dired-dwim-target t) 
+  (setq delete-by-moving-to-trash t) 
+  (put 'dired-find-alternate-file 'disabled nil)
+  (setq dired-listing-switches "-agho --group-directories-first")
+
+  (setq image-dired-external-viewer "/usr/bin/gimp")
 #+END_SRC 
 
-
-* Startup Configuration
 
 ** Backup Settings
 #+BEGIN_SRC elisp
@@ -109,31 +94,148 @@
       )
 #+END_SRC 
 
-** Dired Settings
-#+BEGIN_SRC elisp
-(setq dired-dwim-target t) 
-(setq delete-by-moving-to-trash t) 
-(put 'dired-find-alternate-file 'disabled nil)
-(setq dired-listing-switches "-agho --group-directories-first")
-#+END_SRC 
 
-** History and State Preservation
-#+BEGIN_SRC elisp
-(savehist-mode 1)
-(save-place-mode 1)
-(setq history-length 25)
-(global-auto-revert-mode 1)
-#+END_SRC 
+**  Themes 
 
-** Startup Display Settings
+#+BEGIN_SRC   elisp   
+(use-package beacon
+  :diminish
+  :config
+  (beacon-mode 1)
+  :custom
+  (becon-push-mark 35))
+
+(use-package nerd-icons
+  :defer t)
+
+(use-package doom-modeline 
+  :init
+  (doom-modeline-mode 1))
+
+(use-package doom-themes 
+  :init
+  (load-theme 'doom-palenight t))
+
+
+(use-package rainbow-delimiters 
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+#+END_SRC   
+
+
+* Evil Mode 
 #+BEGIN_SRC elisp
-(setq inhibit-startup-message t
-      initial-major-mode 'org-mode
-      initial-buffer-choice "~/Dropbox/sandbox.org")
-(setq use-dialog-box nil)
-#+END_SRC 
+  (use-package evil 
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-want-C-u-scroll t)
+    (setq evil-want-C-i-jump nil)
+    :config
+    (evil-mode 1)
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+    (evil-set-initial-state 'messages-buffer-mode 'normal)
+    (evil-set-initial-state 'dashboard-mode 'normal))
+
+  (use-package evil-collection 
+    :after evil
+    :config
+    (evil-collection-init))
+
+  (use-package evil-nerd-commenter
+    :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+
+(use-package undo-tree
+  :ensure t
+  :after evil
+  :diminish
+  :config
+  (evil-set-undo-system 'undo-tree)
+  (global-undo-tree-mode 1))
+#+END_SRC
+
+
+
+*  Keybindings  
+
+** Which Key
+#+BEGIN_SRC elisp
+(use-package which-key
+  :init
+  :config
+  (which-key-mode)
+  (setq which-key-idle-dely 0.5)
+  (which-key-setup-minibuffer))
+#+END_SRC
+
+
+** General Keybindings
+#+BEGIN_SRC elisp
+  (use-package general  
+    :config
+    (general-create-definer rune/leader-keys
+      :keymaps '(normal insert visual emacs)
+      :prefix "SPC"
+      :global-prefix "C-SPC")
+    (rune/leader-keys
+      "t"  '(:ignore t :which-key "toggles")
+      "tt" '(counsel-load-theme :which-key "choose theme")))
+#+END_SRC
+
+
+** Text Scale Hydra
+#+BEGIN_SRC elisp
+(defhydra hydra-text-scale (:timeout 4) 
+  ("j" text-scale-increase "in")
+  ("k" text-scale-decrease "out")
+  ("f" nil "finished" :exit t))
+#+END_SRC
+
+
+** Global Key Bindings
+#+BEGIN_SRC elisp
+(global-set-key (kbd "C-c t") 'toggle-transparency)
+(global-set-key (kbd "<f1>") (lambda() (interactive) (find-file "~/Dropbox/mat265/")))
+(global-set-key (kbd "<f2>") (lambda() (interactive) (find-file "~/Dropbox/GTD.org")))
+(global-set-key (kbd "<f3>") (lambda() (interactive) (find-file "~/Dropbox/config/")))
+(global-set-key (kbd "<f4>") (lambda() (interactive) (find-file "~/Dropbox/research/clustering_particles/density_estimation")))
+(global-set-key (kbd "<f5>") (lambda() (interactive) (find-file "~/Dropbox/projects/")))
+#+END_SRC
+
+
+
+** Leader Key Bindings
+#+BEGIN_SRC elisp
+  (rune/leader-keys
+    "sq" '(sql-postgres :which-key "sql-postgres")
+    "ww" '(evil-window-next :which-key "evil-window-next")
+    "mm" '(markdown-mode :which-key "markdown-mode")
+    "mv" '(markdown-view-mode :which-key "markdown-view-mode")
+    "ts" '(hydra-text-scale/body :which-key "scale text")
+    "cc" '(TeX-command-run-all :which-key "Tex-command-run-all")
+    "cb" '(kill-this-buffer :which-key "kill-this-buffer")
+    "cn" '(global-display-line-numbers-mode :which-key "global-display-number-mode")
+    "tm" '(vterm :which-key "vterm")
+    "ss" '(sly :which-key "sly")
+    "cl" '(global-display-fill-column-indicator-mode :which-key "global-display-fill-column-indicator-mode")
+    "bm" '(blacken-mode :which-key "blacken-mode")
+    "tc" '(TeX-clean :which-key "TeX-clean")
+    "lb" '(list-buffers :which-key "list-buffers")
+    "tp" '(transparency :which-key "transparency")
+    "bf" '(eval-buffer :which-key "eval-buffer")
+    "yns" '(yas-new-snippet :which-key "yas-new-snippet")
+    )
+#+END_SRC
+
+
+
+*  User-defined Functions 
 
 ** Startup Time Display Function
+
 #+BEGIN_SRC elisp
 (defun efs/display-startup-time ()
   (message "Emacs loaded in %s with %d garbage collections."
@@ -167,121 +269,22 @@
 (transparency 90)
 #+END_SRC   
 
-** THEME
 
-#+BEGIN_SRC   elisp   
-(use-package beacon
-  :diminish
-  :config
-  (beacon-mode 1)
-  :custom
-  (becon-push-mark 35))
-
-(use-package nerd-icons
-  :defer t)
-
-(use-package doom-modeline 
-  :init
-  (doom-modeline-mode 1)
-  :custom
-  (doom-modeline--font-height 6))
-
-
-(use-package doom-themes 
-  :init
-  ;; (load-theme 'doom-tomorrow-night t))
-  (load-theme 'doom-palenight t)
-
-
-(use-package rainbow-delimiters 
-  :hook (prog-mode . rainbow-delimiters-mode))
-
-
-#+END_SRC   
-
-#+RESULTS:
-
-
-
-
-* Development 
+* Integrated Development Environment 
 
 ** Spelling Configuration
-#+BEGIN_SRC elisp
-(setq ispell-dictionary "english")
-#+END_SRC
 
-** Packages Configuration
-
-*** Sly
 #+BEGIN_SRC elisp
 (use-package sly)
-#+END_SRC
 
-*** No Littering
-#+BEGIN_SRC elisp
 (use-package no-littering
   :diminish
   :defer t)
+
+  (setq ispell-dictionary "english")
 #+END_SRC
 
-*** General Keybindings
-#+BEGIN_SRC elisp
-(use-package general  
-  :config
-  (general-create-definer rune/leader-keys
-    :keymaps '(normal insert visual emacs)
-    :prefix "SPC"
-    :global-prefix "C-SPC")
-  (rune/leader-keys
-    "t"  '(:ignore t :which-key "toggles")
-    "tt" '(counsel-load-theme :which-key "choose theme")))
-#+END_SRC
-
-*** Evil Mode Configuration
-#+BEGIN_SRC elisp
-(use-package evil 
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-u-scroll t)
-  (setq evil-want-C-i-jump nil)
-  :config
-  (evil-mode 1)
-  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
-#+END_SRC
-
-*** Evil Collection
-#+BEGIN_SRC elisp
-(use-package evil-collection 
-  :after evil
-  :config
-  (evil-collection-init))
-#+END_SRC
-
-*** Undo Tree
-#+BEGIN_SRC elisp
-(use-package undo-tree
-  :ensure t
-  :after evil
-  :diminish
-  :config
-  (evil-set-undo-system 'undo-tree)
-  (global-undo-tree-mode 1))
-#+END_SRC
-
-*** Evil Nerd Commenter
-#+BEGIN_SRC elisp
-(use-package evil-nerd-commenter
-  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
-#+END_SRC
-
-*** Auto Complete
+** Auto Complete
 #+BEGIN_SRC elisp
 (use-package auto-complete
   :diminish
@@ -289,21 +292,21 @@
   (auto-complete-mode 1))
 #+END_SRC
 
-*** Parentheses Highlighting
+** Parentheses Highlighting
 #+BEGIN_SRC elisp
 (use-package paren
   :diminish
   :config (show-paren-mode))
 #+END_SRC
 
-*** Eldoc
+** Eldoc
 #+BEGIN_SRC elisp
 (use-package eldoc
   :defer t
   :config (global-eldoc-mode))
 #+END_SRC
 
-*** Paredit
+** Paredit
 #+BEGIN_SRC elisp
 (use-package paredit
   :demand t
@@ -315,17 +318,8 @@
   (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode))
 #+END_SRC
 
-*** Which Key
-#+BEGIN_SRC elisp
-(use-package which-key
-  :init
-  :config
-  (which-key-mode)
-  (setq which-key-idle-dely 0.5)
-  (which-key-setup-minibuffer))
-#+END_SRC
 
-*** Ivy and Related Packages
+** Ivy and Related Packages
 #+BEGIN_SRC elisp
 (use-package ivy
   :diminish
@@ -379,17 +373,7 @@
   :config)
 #+END_SRC
 
-**  Yamal
-#+BEGIN_SRC elisp
-(unless (package-installed-p 'yaml-mode)
-  (package-refresh-contents)
-  (package-install 'yaml-mode))
-
-(add-to-list 'org-src-lang-modes '("yaml" . yaml))
-
-#+end_SRC elisp
-
-*** Helpful
+** Helpful
 #+BEGIN_SRC elisp
 (use-package helpful  
   :defer t
@@ -403,81 +387,13 @@
   ([remap describe-key] . helpful-key))
 #+END_SRC
 
-*** Text Scale Hydra
-#+BEGIN_SRC elisp
-(defhydra hydra-text-scale (:timeout 4) 
-  ("j" text-scale-increase "in")
-  ("k" text-scale-decrease "out")
-  ("f" nil "finished" :exit t))
-#+END_SRC
-
-
-* LSP Configuration
-
-** Core LSP Configuration
-#+begin_src elisp
-(use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :hook 
-  (lsp-mode . lsp-enable-which-key-integration)
-  :custom
-  (lsp-diagnostics-provider :capf)
-  (lsp-headerline-breadcrumb-enable t)
-  (lsp-headerline-breadcrumb-segments '(project file symbols))
-  (lsp-lens-enable nil)
-  (lsp-disabled-clients '((python-mode . pyls)))
-  :init
-  (setq lsp-keymap-prefix "C-c l")) ;; Or 'C-l', 's-l'
-#+end_src
-
-** LSP Ivy Integration
-#+begin_src elisp
-(use-package lsp-ivy
-  :after lsp-mode)
-#+end_src
-
-** LSP UI Configuration
-#+begin_src elisp
-(use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
-  :after lsp-mode
-  :custom
-  (lsp-ui-doc-show-with-cursor nil)
-  :config
-  (setq lsp-ui-doc-position 'bottom))
-#+end_src
-
-** Company Box for LSP
-#+begin_src elisp
-(use-package company-box
-  :hook (company-mode . company-box-mode))
-#+end_src
-
-** LSP Treemacs Integration
-#+begin_src elisp
-(use-package lsp-treemacs
-  :after (lsp-mode treemacs))
-#+end_src
-
-** LSP Pyright for Python
-#+begin_src elisp
-(use-package lsp-pyright
-  :hook
-  (python-mode . (lambda ()
-                   (require 'lsp-pyright)
-                   (lsp-deferred))))
-#+end_src
-
-
-* Project Management and Development Tools
-
 ** Code Formatting
 #+begin_src elisp
 (use-package blacken
   :defer t
   :init
-  (setq-default blacken-fast-unsafe nil))
-  ;; (setq-default blacken-line-length 80)
+  (setq-default blacken-fast-unsafe nil)
+  (setq-default blacken-line-length 80))
 #+end_src
 
 ** Autocompletion with Company
@@ -492,6 +408,8 @@
   :custom
   (company-minimum-prefix-length 1)
   (company-idle-delay 0.0))
+
+
 
 (use-package company-box
   :hook (company-mode . company-box-mode))
@@ -522,22 +440,6 @@
   :config (counsel-projectile-mode))
 #+end_src
 
-** Git Integration with Magit
-#+begin_src elisp
-(use-package magit 
-  :custom
-  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-
-(use-package forge)
-#+end_src
-
-** Text Editing Enhancements
-#+begin_src elisp
-(add-hook 'text-mode-hook 'visual-line-mode) ;; Sensible line breaking
-(delete-selection-mode t) ;; Overwrite selected text
-(setq scroll-error-top-bottom t)
-#+end_src
-
 ** Spell Checking with Flyspell
 #+begin_src elisp
 (use-package flyspell
@@ -550,7 +452,7 @@
           ("C-;" . flyspell-auto-correct-previous-word))
 #+end_src
 
-** Quick Note Taking with Deft
+** Deft
 #+begin_src elisp
 (use-package deft
   :config
@@ -584,187 +486,308 @@
 
 ** Snippets with Yasnippet
 #+begin_src elisp
-(use-package yasnippet
-  :ensure t
-  :diminish
-  :config
-  (use-package yasnippet-snippets)
-  (yas-reload-all)
-  (yas-global-mode 1))
-(setq yas-snippet-dirs '("~/Dropbox/config/emacs_snippets/"))
-(define-key yas-minor-mode-map (kbd "<tab>") nil)
-(define-key yas-minor-mode-map (kbd "TAB") nil)
-(define-key yas-minor-mode-map (kbd "<C-tab>") 'yas-expand)
+  (use-package yasnippet
+    :ensure t
+    :diminish
+    :config
+    (use-package yasnippet-snippets)
+    (setq yas-snippet-dirs '("~/Dropbox/config/emacs_snippets/"))
+    (yas-reload-all)
+    (yas-global-mode 1))
+
+  
+  (define-key yas-minor-mode-map (kbd "<tab>") nil)
+  (define-key yas-minor-mode-map (kbd "TAB") nil)
+  (define-key yas-minor-mode-map (kbd "<C-tab>") 'yas-expand)
 #+end_src
 
+** Text Editing Enhancements
+#+begin_src elisp
+(add-hook 'text-mode-hook 'visual-line-mode) ;; Sensible line breaking
+(delete-selection-mode t) ;; Overwrite selected text
+(setq scroll-error-top-bottom t)
+#+end_src
 
-* Programming Languages
-**  PYTHON
-
-#+BEGIN_SRC   elisp   
-    (use-package python-mode
-      :hook
-      (python-mode . flycheck-mode)
-      (python-mode . company-mode)
-      (python-mode . blacken-mode)
-      (python-mode . yas-minor-mode)
-      :custom
-      (python-shell-interpreter "python3") 
-      :config
-      )
-
-(use-package elpy
-  :ensure t
-  :init
-  (elpy-enable)
-  :config
-  ;; Use IPython for REPL
-  (setq elpy-shell-interactive-shell-command "ipython3")
-  (setq elpy-shell-interactive-shell-args '("--simple-prompt" "-i"))
-  ;; If you want Elpy to use a different python, set it here
-  ;; (setq elpy-rpc-python-command "path/to/python")
-  )
-
-  
-    (use-package pyvenv
-      :defer t
-      :hook (pyvenv-mode . python-mode)
-      :config
-      (pyvenv-mode 1))
-  
-
-
-#+END_SRC   
-
-**  HASKELL
-#+BEGIN_SRC   haskell   
-(use-package haskell-mode
-  :defer t)
-(require 'haskell-mode)
-(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
-(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
-(setq-default indent-tabs-mode nil)
-#+END_SRC   
-
-** Yaml
-#+BEGIN_SRC   elisp   
-
-  (use-package  yaml-mode
-    :ensure t)
-
-
-#+END_SRC   
-
-** C/C++
+** Aggressive Indent
+#+BEGIN_SRC elisp
+  (use-package aggressive-indent
+    :diminish
+    :hook
+    (emacs-lisp-mode . aggressive-indent-mode)
+    (pthon-mode . aggressive-indent-mode))
+#+END_SRC
 
 
 * Org Mode
 
-#+begin_src elisp
-(setq image-dired-external-viewer "/usr/bin/gimp")
 
+**  Basic Org Mode Setup 
+
+#+begin_src elisp
 (use-package org)
 
 (setq org-startup-indented t
-      org-pretty-entities t
-      org-hide-emphasis-markers t
-      org-startup-with-inline-images t
-      org-image-actual-width '(200))
+        org-pretty-entities t
+        org-hide-emphasis-markers t
+        org-startup-with-inline-images t
+        org-image-actual-width '(200))
+#+END_src elisp
 
-(use-package org-appear
-  :hook (org-mode . org-appear-mode))
+**  Org-Appear
 
-(use-package deft
-  :defer t
-  :config
-  (setq deft-directory org-directory
-        deft-recursive t
-        deft-strip-summary-regexp ":PROPERTIES:\n\\(.+\n\\)+:END:\n"
-        deft-use-filename-as-title t))
+#+begin_src elisp
+    (use-package org-appear
+      :hook (org-mode . org-appear-mode))
+#+END_src elisp
 
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '(
-   (R . t)
-   (C . t)
-   (python . t) 
-   (shell . t) 
-   (haskell . t) 
-   (latex . t) 
-   (matlab . t)
-   (sql . t)
-   (emacs-lisp . t)))
+**  Org-Babel
 
-(setq org-babel-python-command "python3")
+#+begin_src elisp
 
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '(
+       (R . t)
+       (C . t)
+       (python . t) 
+       (shell . t) 
+       (haskell . t) 
+       (latex . t) 
+       (matlab . t)
+       (sql . t)
+       (emacs-lisp . t)))
 
+    (setq org-babel-python-command "python3")
+
+#+END_src elisp
+
+**  Org-Font-Setup Function
+
+#+begin_src elisp
 (defun efs/org-font-setup ()
-  ;; Replace list hyphen with dot
-  (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+;; Replace list hyphen with dot
+      (font-lock-add-keywords 'org-mode
+                              '(("^ *\\([-]\\) "
+                                 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-(let ((background-color (face-attribute 'default :background)))
-  (set-face-attribute 'org-block-begin-line nil
-                      :foreground background-color
-                      :background background-color)
-  (set-face-attribute 'org-block-end-line nil
-                      :foreground background-color
-                      :background background-color))
+    (let ((background-color (face-attribute 'default :background)))
+      (set-face-attribute 'org-block-begin-line nil
+                          :foreground background-color
+                          :background background-color)
+      (set-face-attribute 'org-block-end-line nil
+                          :foreground background-color
+                          :background background-color))
 
-  ;; Set faces for heading levels
-  (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+      ;; Set faces for heading levels
+      (dolist (face '((org-level-1 . 1.2)
+                      (org-level-2 . 1.1)
+                      (org-level-3 . 1.05)
+                      (org-level-4 . 1.0)
+                      (org-level-5 . 1.1)
+                      (org-level-6 . 1.1)
+                      (org-level-7 . 1.1)
+                      (org-level-8 . 1.1)))
+        (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
 
-  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+      ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+      (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+      (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+      (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+      (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+      (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+      (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+      (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
-(use-package org
-  :hook (org-mode . efs/org-mode-setup)
-  :config
-  (setq org-ellipsis " ▾")
-  (efs/org-font-setup))
+#+END_src elisp
+ 
+** Org-Setup   
+#+begin_src elisp
+    (use-package org
+      :hook (org-mode . efs/org-mode-setup)
+      :config
+      (setq org-ellipsis " ▾")
+      (efs/org-font-setup))
+
+#+END_src elisp
+
+** Org Bullets
+
+#+begin_src elisp
+
+    (defun efs/org-mode-visual-fill ()
+      (setq visual-fill-column-width 100
+            visual-fill-column-center-text t)
+      (visual-fill-column-mode 1))
+
+    (use-package visual-fill-column
+      :hook (org-mode . efs/org-mode-visual-fill))
+
+    (use-package org-bullets
+      :after org
+      :hook (org-mode . org-bullets-mode)
+      :custom
+      (org-bullets-bullet-list '("◉" "●" "○" "●" "○" "●" "○" "●")))
 
 
-(defun efs/org-mode-visual-fill ()
-  (setq visual-fill-column-width 100
-        visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
-
-(use-package visual-fill-column
-  :hook (org-mode . efs/org-mode-visual-fill))
-
-(use-package org-bullets
-  :after org
-  :hook (org-mode . org-bullets-mode)
-  :custom
-  (org-bullets-bullet-list '("◉" "●" "○" "●" "○" "●" "○" "●")))
-
-
-(setq sql-postgres-login-params
-      '((user :default "postgres")
-        (database :default "analysis")
-        (server :default "localhost")
-        (port :default 5432)))
 #+end_src 
 
 
-* LaTeX Configurations
+*  Languages Server Protocol
 
-** PDF Tools
+** LSP Configuration
+
+#+begin_src elisp
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :hook 
+  (lsp-mode . lsp-enable-which-key-integration)
+  :custom
+  (lsp-diagnostics-provider :capf)
+  (lsp-headerline-breadcrumb-enable t)
+  (lsp-headerline-breadcrumb-segments '(project file symbols))
+  (lsp-lens-enable nil)
+  (lsp-disabled-clients '((python-mode . pyls)))
+  :init
+  (setq lsp-keymap-prefix "C-c l")) ;; Or 'C-l', 's-l'
+#+end_src
+
+
+** LSP Ivy Integration
+#+begin_src elisp
+(use-package lsp-ivy
+  :after lsp-mode)
+#+end_src
+
+
+** LSP UI Configuration
+#+begin_src elisp
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :after lsp-mode
+  :custom
+  (lsp-ui-doc-show-with-cursor nil)
+  :config
+  (setq lsp-ui-doc-position 'bottom))
+#+end_src
+
+
+** LSP Treemacs Integration
+#+begin_src elisp
+(use-package lsp-treemacs
+  :after (lsp-mode treemacs))
+#+end_src
+
+
+** LSP Pyright for Python
+#+begin_src elisp
+(use-package lsp-pyright
+  :hook
+  (python-mode . (lambda ()
+                   (require 'lsp-pyright)
+                   (lsp-deferred))))
+#+end_src
+
+
+*  Version Control  (Git Integration with Magit)
+
+#+begin_src elisp
+(use-package magit 
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+(use-package forge)
+#+end_src
+
+
+* Programming Languages
+
+**  PYTHON
+
+#+BEGIN_SRC   elisp   
+  (use-package python-mode
+    :hook
+    (python-mode . flycheck-mode)
+    (python-mode . company-mode)
+    (python-mode . blacken-mode)
+    (python-mode . yas-minor-mode)
+    :custom
+    (python-shell-interpreter "python3") 
+    :config
+    )
+
+  (use-package elpy
+    :ensure t
+    :init
+    (elpy-enable)
+    :config
+    ;; Use IPython for REPL
+    (setq elpy-shell-interactive-shell-command "ipython3")
+    (setq elpy-shell-interactive-shell-args '("--simple-prompt" "-i")))
+
+  (use-package pyvenv
+    :defer t
+    :hook (pyvenv-mode . python-mode)
+    :config
+    (pyvenv-mode 1))
+
+
+  (setq sql-postgres-login-params
+        '((user :default "postgres")
+          (database :default "analysis")
+          (server :default "localhost")
+          (port :default 5432)))
+
+#+END_SRC   
+
+
+** SQL
+
+#+BEGIN_SRC   
+  (setq sql-postgres-login-params
+        '((user :default "postgres")
+          (database :default "analysis")
+          (server :default "localhost")
+          (port :default 5432)))
+#+END_SRC   
+
+
+**  HASKELL
+#+BEGIN_SRC   haskell   
+  (use-package haskell-mode
+    :defer t)
+    (require 'haskell-mode)
+    (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+    (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+    (setq-default indent-tabs-mode nil)
+#+END_SRC   
+
+
+** Yaml
+#+BEGIN_SRC   elisp   
+(use-package  yaml-mode
+    :ensure t)
+
+(unless (package-installed-p 'yaml-mode)
+(package-refresh-contents)
+(package-install 'yaml-mode))
+
+(add-to-list 'org-src-lang-modes '("yaml" . yaml))
+#+end_SRC elisp
+
+
+
+** Elisp Lint
+#+BEGIN_SRC elisp
+(use-package elisp-lint)
+#+END_SRC
+
+
+** LATEX 
+
+*** LaTeX Configurations
+
+
+*** PDF Tools
 #+BEGIN_SRC elisp
   (use-package pdf-tools
     :ensure t
@@ -775,7 +798,8 @@
 
 #+END_SRC
 
-** AUCTeX
+
+*** AUCTeX
 #+BEGIN_SRC elisp
   (use-package auctex
     :ensure t
@@ -809,7 +833,7 @@
 
 
 
-** CDLaTeX
+*** CDLaTeX
 #+BEGIN_SRC elisp
 (use-package cdlatex
   :hook (LaTeX-mode . cdlatex-mode)
@@ -817,7 +841,8 @@
   (cdlatex-mode 1))
 #+END_SRC
 
-** Company Math
+
+*** Company Math
 #+BEGIN_SRC elisp
 (use-package company-math)
 
@@ -836,13 +861,15 @@
     ;; :hook (LaTeX-mode . company-math)
 #+END_SRC
 
-** LaTeX Auto-Activation Snippets (laas)
+
+*** LaTeX Auto-Activation Snippets (laas)
 #+BEGIN_SRC elisp
 (use-package laas
   :hook (LaTeX-mode . lass-mode))
 #+END_SRC
 
-** TeX-fold-mode and Other Hooks
+
+*** TeX-fold-mode and Other Hooks
 #+BEGIN_SRC elisp
 (add-hook 'TeX-mode-hook #'TeX-fold-mode)
 (add-hook 'TeX-language-dk-hook
@@ -860,7 +887,7 @@
 #+END_SRC
 
 
-* Extensions and Modes
+* Modes and Extensions 
 
 ** Minions
 #+BEGIN_SRC elisp
@@ -911,21 +938,10 @@
                       "blob/master/data/css/github.css"))))
 #+END_SRC
 
-** Elisp Lint
-#+BEGIN_SRC elisp
-(use-package elisp-lint)
-#+END_SRC
 
 ** Focus
 #+BEGIN_SRC elisp
 (use-package focus)
-#+END_SRC
-
-** Aggressive Indent
-#+BEGIN_SRC elisp
-(use-package aggressive-indent
-  :diminish
-  :hook (emacs-lisp-mode . aggressive-indent-mode))
 #+END_SRC
 
 ** Emojify
@@ -937,59 +953,11 @@
 #+END_SRC
 
 
-* Keyboard Bindings
-
-** Leader Key Bindings
-#+BEGIN_SRC elisp
-  (rune/leader-keys
-    "sq" '(sql-postgres :which-key "sql-postgres")
-    "ww" '(evil-window-next :which-key "evil-window-next")
-    "mm" '(markdown-mode :which-key "markdown-mode")
-    "mv" '(markdown-view-mode :which-key "markdown-view-mode")
-    "ts" '(hydra-text-scale/body :which-key "scale text")
-    "cc" '(TeX-command-run-all :which-key "Tex-command-run-all")
-    "cb" '(kill-this-buffer :which-key "kill-this-buffer")
-    "cn" '(global-display-line-numbers-mode :which-key "global-display-number-mode")
-    "tm" '(vterm :which-key "vterm")
-    "ss" '(sly :which-key "sly")
-    "cl" '(global-display-fill-column-indicator-mode :which-key "global-display-fill-column-indicator-mode")
-    "bm" '(blacken-mode :which-key "blacken-mode")
-    "tc" '(TeX-clean :which-key "TeX-clean")
-    "lb" '(list-buffers :which-key "list-buffers")
-    "tp" '(transparency :which-key "transparency")
-    "bf" '(eval-buffer :which-key "eval-buffer")
-    "yns" '(yas-new-snippet :which-key "yas-new-snippet")
-    )
-#+END_SRC
 
 
-** Global Key Bindings
-#+BEGIN_SRC elisp
-(global-set-key (kbd "C-c t") 'toggle-transparency)
-(global-set-key (kbd "<f1>") (lambda() (interactive) (find-file "~/Dropbox/mat265/")))
-(global-set-key (kbd "<f2>") (lambda() (interactive) (find-file "~/Dropbox/GTD.org")))
-(global-set-key (kbd "<f3>") (lambda() (interactive) (find-file "~/Dropbox/config/")))
-(global-set-key (kbd "<f4>") (lambda() (interactive) (find-file "~/Dropbox/research/clustering_particles/density_estimation")))
-(global-set-key (kbd "<f5>") (lambda() (interactive) (find-file "~/Dropbox/projects/")))
-#+END_SRC
+*  Terminal Configuration
 
-
-** 
-
-#+begin_src elisp
-  ;; (load-user-file "./config/terminal.el")
-  ;; (load-user-file "./config/project.el")
-  ;; (load-user-file "./config/lsp.el")
-  ;; (load-user-file "./config/orgmode.el")
-  ;; (load-user-file "./config/latex.el")
-  ;; (load-user-file "./config/kbd.el")
-
- #+end_src 
-
-
-* Terminal Configuration
-
-** Term Configuration
+** Term 
 #+BEGIN_SRC elisp
 (use-package term
   :defer t
@@ -998,7 +966,7 @@
   (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
 #+END_SRC
 
-** VTerm Configuration
+** Vterm 
 #+BEGIN_SRC elisp
 (use-package vterm
   :defer t
@@ -1018,36 +986,46 @@
                    (display-line-numbers-mode -1))))
 #+END_SRC
 
-* TESTING 
-#+BEGIN_SRC elisp      
-  (defun tidy-org-buffer ()
-    (interactive)
-    (goto-char (point-min))
-    (while (not (eobp))
-      (org-table-align)
-      (forward-line)))
 
-
-(defun org-align-source-blocks ()
-  (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward "^\\s-+\\(#\\+BEGIN_SRC\\)" nil t)
-      (replace-match "\\1"))))
-
-  
-#+END_SRC   
+*  No Littering
 
 #+BEGIN_SRC elisp
 
-(use-package toc-org
-     :commands toc-org-enable
-     :init (add-hook 'org-mode-hook 'toc-org-enable))
+    (setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
 
-#+END_SRC python
- 
+;;    (setq make-backup-files nil)
+
+    (make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
+
+    (setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
+          auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
+
+  (setq create-lockfiles nil)
+
+  (setq projectile-known-projects-file
+        (expand-file-name "tmp/projectile-bookmarks.eld" user-emacs-directory)
+        lsp-session-file (expand-file-name "tmp/.lsp-session-v1" user-emacs-directory))
+
+  
+(setq user-emacs-directory (expand-file-name "~/.cache/emacs"))
+
+(use-package no-littering)
 
 
+#+END_SRC 
 
+* TESTING 
 
+#+BEGIN_SRC elisp
 
+  (defun org-hide-src-block-delimiters()
+    (interactive)
+    (save-excursion (goto-char (point-max))
+        (while (re-search-backward "#\\+BEGIN_SRC\\|#\\+END_SRC" nil t)
+           (let ((ov (make-overlay (line-beginning-position)
+               (1+ (line-end-position)))))
+           (overlay-put ov 'invisible t)))))
+
+  
+  (org-hide-src-block-delimiters)
+#+END_SRC 

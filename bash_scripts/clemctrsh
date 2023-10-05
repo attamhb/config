@@ -1,0 +1,5 @@
+#!/bin/bash
+find -name "*~" | xargs rm
+find -name "*~" -print0 | xargs -0 rm
+find -name "*~" -exec rm {} \;
+find -name "*~" -delete
