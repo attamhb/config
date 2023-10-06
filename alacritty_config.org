@@ -715,9 +715,9 @@ schemes:
 #colors: *MonokaiPro
 #colors: *Nord
 #colors: *OceanicNext
-#colors: *Palenight
+colors: *Palenight
 #colors: *SolarizedLight
 #colors: *SolarizedDark
-colors: *TomorrowNight
+#colors: *TomorrowNight
 
 #+END_SRC
