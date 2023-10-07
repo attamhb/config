@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name:example_env 
+# key:exm 
+# --
+\begin{example}
+${example}
+
+\end{example}
