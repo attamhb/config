@@ -59,11 +59,12 @@ alias ipy='ipython3'
 
 * Text Editors and IDEs
 #+BEGIN_SRC bash
-alias v='vim'
-alias emnw='emacs -nw &'
-alias em='emacs'
-alias emc="emacsclient -c -a 'emacs'"
-alias va='vim ~/.config/alacritty/alacritty.yml'
+  alias v='vim'
+  alias vm='nvim'
+  alias emnw='emacs -nw &'
+  alias em='emacs'
+  alias emc="emacsclient -c -a 'emacs'"
+  alias va='nvim ~/.config/alacritty/alacritty.yml'
 #+END_SRC
 
 * Search and Grep

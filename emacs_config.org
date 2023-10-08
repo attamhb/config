@@ -60,6 +60,7 @@
   (set-fringe-mode 0)
   (menu-bar-mode 0)
   (setq use-dialog-box nil)
+  (recentf-mode 1)
 
   (savehist-mode 1)
   (save-place-mode 1)
