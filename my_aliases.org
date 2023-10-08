@@ -61,6 +61,7 @@ alias ipy='ipython3'
 #+BEGIN_SRC bash
   alias v='vim'
   alias vm='nvim'
+  alias vnm='nvim ~/.config/nvim/init.lua'
   alias emnw='emacs -nw &'
   alias em='emacs'
   alias emc="emacsclient -c -a 'emacs'"
