@@ -1,4 +1,4 @@
-#+TITLE: EMACS Config
+#+TITLE: MY EMACS Configuration
 #+PROPERTY: header-args :tangle ~/.emacs.d/init.el
 #+STARTUP: showeverything
 #+AUTHOR: ATTA
@@ -86,7 +86,7 @@
  (expand-file-name "backups/" user-emacs-directory) t)
 
 (setq backup-directory-alist `(("." . ,(expand-file-name "backups/" user-emacs-directory)))
-      backup-directory-alist '(("." . "~/.emacs.d/backup"))
+   ;;   backup-directory-alist '(("." . "~/.emacs.d/backup"))
       backup-by-copying t    ; Don't delink hardlinks
       version-control t      ; Use version numbers on backups
       delete-old-versions t  ; Automatically delete excess backups
@@ -96,7 +96,7 @@
 #+END_SRC 
 
 
-**  Themes 
+**  Theme and Modeline 
 
 #+BEGIN_SRC   elisp   
 (use-package beacon
@@ -120,7 +120,6 @@
 
 (use-package rainbow-delimiters 
   :hook (prog-mode . rainbow-delimiters-mode))
-
 #+END_SRC   
 
 
@@ -160,7 +159,7 @@
 
 
 
-*  Keybindings  
+* Keybindings  
 
 ** Which Key
 #+BEGIN_SRC elisp
@@ -210,30 +209,33 @@
 
 ** Leader Key Bindings
 #+BEGIN_SRC elisp
-  (rune/leader-keys
-    "sq" '(sql-postgres :which-key "sql-postgres")
-    "ww" '(evil-window-next :which-key "evil-window-next")
-    "mm" '(markdown-mode :which-key "markdown-mode")
-    "mv" '(markdown-view-mode :which-key "markdown-view-mode")
-    "ts" '(hydra-text-scale/body :which-key "scale text")
-    "cc" '(TeX-command-run-all :which-key "Tex-command-run-all")
-    "cb" '(kill-this-buffer :which-key "kill-this-buffer")
-    "cn" '(global-display-line-numbers-mode :which-key "global-display-number-mode")
-    "tm" '(vterm :which-key "vterm")
-    "ss" '(sly :which-key "sly")
-    "cl" '(global-display-fill-column-indicator-mode :which-key "global-display-fill-column-indicator-mode")
-    "bm" '(blacken-mode :which-key "blacken-mode")
-    "tc" '(TeX-clean :which-key "TeX-clean")
-    "lb" '(list-buffers :which-key "list-buffers")
-    "tp" '(transparency :which-key "transparency")
-    "bf" '(eval-buffer :which-key "eval-buffer")
-    "yns" '(yas-new-snippet :which-key "yas-new-snippet")
-    )
+      (rune/leader-keys
+        "sq" '(sql-postgres :which-key "sql-postgres")
+        "ww" '(evil-window-next :which-key "evil-window-next")
+        "mm" '(markdown-mode :which-key "markdown-mode")
+        "mv" '(markdown-view-mode :which-key "markdown-view-mode")
+        "ts" '(hydra-text-scale/body :which-key "scale text")
+        "cc" '(TeX-command-run-all :which-key "Tex-command-run-all")
+        "cb" '(kill-this-buffer :which-key "kill-this-buffer")
+        "cn" '(global-display-line-numbers-mode :which-key "global-display-number-mode")
+        "tm" '(vterm :which-key "vterm")
+        "ss" '(sly :which-key "sly")
+        "cl" '(global-display-fill-column-indicator-mode :which-key "global-display-fill-column-indicator-mode")
+        "bm" '(blacken-mode :which-key "blacken-mode")
+        "tc" '(TeX-clean :which-key "TeX-clean")
+        "lb" '(list-buffers :which-key "list-buffers")
+        "tp" '(transparency :which-key "transparency")
+        "bf" '(eval-buffer :which-key "eval-buffer")
+        "yns" '(yas-new-snippet :which-key "yas-new-snippet")
+        "ohs" '(org-hide-src-block-delimiters :which-key "org-hide-src-block-delimiters")
+        "obt" '(org-babel-tangle :which-key "org-babel-tangle")
+        )
 #+END_SRC
 
 
 
-*  User-defined Functions 
+
+* User-defined Functions 
 
 ** Startup Time Display Function
 
@@ -357,7 +359,6 @@
   (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
   (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode))
 #+END_SRC
-
 
 ** Ivy and Related Packages
 #+BEGIN_SRC elisp
@@ -559,9 +560,7 @@
 
 
 * Org Mode
-
-
-**  Basic Org Mode Setup 
+** Basic Org Mode Setup 
 
 #+begin_src elisp
 (use-package org)
@@ -573,14 +572,14 @@
         org-image-actual-width '(200))
 #+END_src elisp
 
-**  Org-Appear
+** Org-Appear
 
 #+begin_src elisp
     (use-package org-appear
       :hook (org-mode . org-appear-mode))
 #+END_src elisp
 
-**  Org-Babel
+** Org-Babel
 
 #+begin_src elisp
 
@@ -601,7 +600,7 @@
 
 #+END_src elisp
 
-**  Org-Font-Setup Function
+** Org-Font-Setup Function
 #+END_src elisp
  
 ** Org-Setup   
@@ -636,7 +635,7 @@
 #+end_src 
 
 
-*  Languages Server Protocol
+* Languages Server Protocol
 
 ** LSP Configuration
 
@@ -692,7 +691,7 @@
 #+end_src
 
 
-*  Version Control  (Git Integration with Magit)
+* Version Control  (Git Integration with Magit)
 
 #+begin_src elisp
 (use-package magit 
@@ -705,7 +704,7 @@
 
 * Programming Languages
 
-**  PYTHON
+** PYTHON
 
 #+BEGIN_SRC   elisp   
   (use-package python-mode
@@ -755,7 +754,7 @@
 #+END_SRC   
 
 
-**  HASKELL
+** HASKELL
 #+BEGIN_SRC   haskell   
   (use-package haskell-mode
     :defer t)
@@ -959,7 +958,7 @@
 
 
 
-*  Terminal Configuration
+* Terminal Configuration
 
 ** Term 
 #+BEGIN_SRC elisp
@@ -991,7 +990,7 @@
 #+END_SRC
 
 
-*  No Littering
+* No Littering
 
 #+BEGIN_SRC elisp
 
@@ -1018,6 +1017,7 @@
 
 #+END_SRC 
 
+
 * TESTING 
 
 #+BEGIN_SRC elisp
@@ -1033,3 +1033,11 @@
   
   (org-hide-src-block-delimiters)
 #+END_SRC 
+
+
+#+BEGIN_SRC elisp
+
+   (use-package mu4e)
+
+  #+END_SRC 
+

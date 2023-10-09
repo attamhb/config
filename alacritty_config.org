@@ -1,4 +1,4 @@
-#+TITLE: Alacritty Terminal 
+#+TITLE: Alacritty Terminal Emulator Configuration 
 #+PROPERTY: header-args :tangle ~/.config/alacritty/alacritty.yml
 #+STARTUP: showeverything
 #+AUTHOR: ATTA
