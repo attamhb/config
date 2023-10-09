@@ -20,6 +20,17 @@ import Control.Monad
 import XMonad.Actions.SpawnOn
 #+END_SRC 
 
+*** New
+Add a configurable amount of space around windows.
+
+#+BEGIN_SRC haskell
+import XMonad.Layout.Spacing
+
+     
+
+#+END_SRC 
+
+
 ** DEFAULTS
     
 #+BEGIN_SRC haskell
@@ -294,7 +305,7 @@ defaults = def {
         mouseBindings      = myMouseBindings,
 
       -- hooks, layouts
-        layoutHook         = myLayout,
+        layoutHook         = spacingWithEdge 0 $ myLayout,
         manageHook         = myManageHook,
         handleEventHook    = myEventHook,
         logHook            = myLogHook,
