@@ -64,7 +64,7 @@ myFocusedBorderColor = "#712a91" -- "#ff0000"
       , ((modm .|. shiftMask, xK_g     ), spawn "chromium --kiosk")
       , ((modm .|. shiftMask, xK_b     ), spawn "firefox")
       , ((modm,               xK_g     ), spawn "brave --kiosk")
-      --, ((modm,               xK_b     ), spawn "librewolf")
+      , ((modm,               xK_b     ), spawn "pkill xmobar")
       , ((modm,               xK_v     ), spawn "virtualbox")
       , ((modm,               xK_z     ), spawn "zathura")
       , ((modm,               xK_o     ), spawn "okular")
@@ -91,7 +91,7 @@ myFocusedBorderColor = "#712a91" -- "#ff0000"
       , ((modm              , xK_period), sendMessage (IncMasterN (-1)))
      
       -- See also the statusBar function from Hooks.DynamicLog.
-      , ((modm, xK_b     ), sendMessage ToggleStruts)
+      --, ((modm, xK_b     ), sendMessage ToggleStruts)
 
       -- Quit xmonad
       , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))

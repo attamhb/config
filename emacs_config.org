@@ -635,6 +635,28 @@
 #+end_src 
 
 
+* Org Roam
+
+#+BEGIN_SRC elisp
+
+(use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory "~/Dropbox/RoamNoes/RoamNotes")
+  (org-roam-completion-everywhere t)
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert)
+         :map org-mode-map
+         ("C-M-i"    . completion-at-point))
+  :config
+  (org-roam-setup))
+#+END_SRC 
+
+
+
 * Languages Server Protocol
 
 ** LSP Configuration
@@ -1035,9 +1057,4 @@
 #+END_SRC 
 
 
-#+BEGIN_SRC elisp
-
-   (use-package mu4e)
-
-  #+END_SRC 
 
