@@ -40,9 +40,11 @@ myBorderWidth   = 1
 myModMask       = mod4Mask
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9", "10"]
 myNormalBorderColor  = "#8f8b7f" --"#42f5e6"
-myFocusedBorderColor = "#712a91" -- "#ff0000"
-------------------------------------------------------------------------
+myFocusedBorderColor = "#712a91" -- "#ff0000" 
+spawnToWorkspace :: String -> String -> X ()
+    ------------------------------------------------------------------------
 #+END_SRC 
+
 
 
 * myKeys
@@ -62,9 +64,9 @@ myFocusedBorderColor = "#712a91" -- "#ff0000"
       , ((modm .|. shiftMask, xK_s     ), spawn "inkscape")
       , ((modm .|. shiftMask, xK_a     ), spawn "gnome-calendar")
       , ((modm .|. shiftMask, xK_g     ), spawn "chromium --kiosk")
-      , ((modm .|. shiftMask, xK_b     ), spawn "firefox")
-      , ((modm,               xK_g     ), spawn "brave --kiosk")
+      , ((modm .|. shiftMask, xK_b     ), spawn "xmobar -x ~/.xmonad/xmobarrc")
       , ((modm,               xK_b     ), spawn "pkill xmobar")
+      , ((modm,               xK_g     ), spawn "brave --kiosk")
       , ((modm,               xK_v     ), spawn "virtualbox")
       , ((modm,               xK_z     ), spawn "zathura")
       , ((modm,               xK_o     ), spawn "okular")
@@ -89,7 +91,7 @@ myFocusedBorderColor = "#712a91" -- "#ff0000"
       , ((modm,               xK_t     ), withFocused $ windows . W.sink)
       , ((modm              , xK_comma ), sendMessage (IncMasterN 1))
       , ((modm              , xK_period), sendMessage (IncMasterN (-1)))
-     
+
       -- See also the statusBar function from Hooks.DynamicLog.
       --, ((modm, xK_b     ), sendMessage ToggleStruts)
 
