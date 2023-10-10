@@ -19,7 +19,8 @@ Config {
    -- layout
    , sepChar =  "%"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   , template = "%battery% | %multicpu% | %coretemp% | %memory% | %dynnetwork% }{ %KPHX% | %date% || %kbd% "
+ --  , template = "%battery% | %multicpu% | %coretemp% | %memory% | %dynnetwork% }{ %KPHX% | %date% || %kbd% "
+   , template = "%battery% | %multicpu% | %coretemp% | %memory% | %dynnetwork% }{ %KPHX% | %date% || %kbd%    "
 
 ------------------------------------------------------------------------------
    -- general behavior

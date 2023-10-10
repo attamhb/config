@@ -24,6 +24,9 @@ import XMonad.Actions.SpawnOn
 
 #+BEGIN_SRC haskell
 import XMonad.Layout.Spacing
+import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.ManageDocks
+import XMonad.Util.Run(spawnPipe)
 
 #+END_SRC 
 
@@ -41,7 +44,6 @@ myModMask       = mod4Mask
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9", "10"]
 myNormalBorderColor  = "#8f8b7f" --"#42f5e6"
 myFocusedBorderColor = "#712a91" -- "#ff0000" 
-spawnToWorkspace :: String -> String -> X ()
     ------------------------------------------------------------------------
 #+END_SRC 
 
@@ -241,10 +243,11 @@ myStartupHook = do
            spawnOnce "picom &"
            spawnOnce "nitrogen --restore &"
            spawnOnce myMonitor
-           -- spawnOnce "emacs &"
-           --spawnOnce "qutebrowser --nowindow"
-           -- spawnOnce "chromium &"
-           -- spawnOnce "alacritty &"
+           spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --widthtype request --height 18 --monitor primary &"
+           spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --widthtype request --height 18 --monitor 1 &"
+           spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --widthtype request --height 18 --monitor 2 &"
+           spawnOnce "nm-applet &"
+           spawnOnce "volumeicon &"
            spawnOnce "dropbox start &"
 #+END_SRC 
 
@@ -259,8 +262,9 @@ myStartupHook = do
 -- main = xmonad defaults
 main = do
   xmproc <- spawnPipe "xmobar -x 0 ~/.xmonad/xmobarrc"
-  xmproc <- spawnPipe "xmobar -x 1 ~/.xmonad/xmobarrc"
   xmproc <- spawnPipe "xmobar -x 2 ~/.xmonad/xmobarrc"
+  spawn "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --tint 0x191970 --height 18 &"
+  xmproc <- spawnPipe "xmobar -x 1 ~/.xmonad/xmobarrc"
   xmonad $ docks defaults
 
 #+END_SRC 

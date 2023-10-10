@@ -122,6 +122,25 @@
   :hook (prog-mode . rainbow-delimiters-mode))
 #+END_SRC   
 
+#+BEGIN_SRC elisp
+
+ (defun switch-theme-based-on-time ()
+  (let* ((current-hour (string-to-number (format-time-string "%H")))
+         (night-time (or (>= current-hour 22) (< current-hour 6))))
+    (if night-time
+        (progn
+          (disable-theme 'doom-palenight) ; Ensure the previous theme is disabled
+          (load-theme 'doom-solarized-dark-high-contrast t))
+      (progn
+        (disable-theme 'doom-solarized-dark-high-contrast) ; Ensure the previous theme is disabled
+        (load-theme 'doom-palenight t)))))
+  
+(run-with-timer 0 (* 5 60) 'switch-theme-based-on-time)
+ 
+
+  #+END_SRC 
+
+
 
 * Evil Mode 
 #+BEGIN_SRC elisp
