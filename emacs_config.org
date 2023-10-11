@@ -130,9 +130,9 @@
     (if night-time
         (progn
           (disable-theme 'doom-palenight) ; Ensure the previous theme is disabled
-          (load-theme 'doom-solarized-dark-high-contrast t))
+          (load-theme 'doom-oceanic-next t))
       (progn
-        (disable-theme 'doom-solarized-dark-high-contrast) ; Ensure the previous theme is disabled
+        (disable-theme 'doom-oceanic-next) ; Ensure the previous theme is disabled
         (load-theme 'doom-palenight t)))))
   
 (run-with-timer 0 (* 5 60) 'switch-theme-based-on-time)
