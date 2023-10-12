@@ -1,0 +1,191 @@
+#+TITLE: Picom Compositor  Configuration 
+#+PROPERTY: header-args :tangle ~/.config/picom.conf
+#+STARTUP: showeverything
+#+AUTHOR: ATTA
+
+* Shadows
+
+#+BEGIN_SRC bash
+shadow = false;
+shadow-radius = 7;
+shadow-offset-x = -7;
+shadow-offset-y = -7;
+# shadow-red = 0
+# shadow-green = 0
+# shadow-blue = 0
+# shadow-color = "#000000"
+shadow-exclude = [
+  "name = 'Notification'",
+  "class_g = 'Conky'",
+  "class_g ?= 'Notify-osd'",
+  "class_g = 'Cairo-clock'",
+  "_GTK_FRAME_EXTENTS@:c"
+];
+
+# clip-shadow-above = []
+# shadow-exclude-reg = ""
+# xinerama-shadow-crop = false
+
+#+END_SRC 
+
+
+* Fading
+
+#+BEGIN_SRC bash
+fading = true
+#fade-in-step = 0.03;
+#fade-out-step = 0.03;
+# fade-delta = 10
+# fade-exclude = []
+# no-fading-openclose = false
+# no-fading-destroyed-argb = false
+#+END_SRC 
+
+
+* Transparency /Opacity
+
+#+BEGIN_SRC bash
+inactive-opacity = 0.95;
+frame-opacity = 0.95;
+inactive-opacity-override = false;
+# active-opacity = 1.0
+# inactive-dim = 0.0
+# focus-exclude = []
+focus-exclude = [ "class_g = 'Cairo-clock'" ];
+
+# inactive-dim-fixed = 1.0
+# example:
+#    opacity-rule = [ "80:class_g = 'URxvt'" ];
+
+# opacity-rule = []
+
+#+END_SRC 
+
+
+* Corners 
+
+#+BEGIN_SRC bash 
+corner-radius = 0
+rounded-corners-exclude = [
+  "window_type = 'dock'",
+  "window_type = 'desktop'"
+];
+#+END_SRC 
+
+
+* Background-Blurring
+
+#+BEGIN_SRC bash
+# blur-method =
+# blur-size = 12
+# blur-deviation = false
+# blur-strength = 5
+# blur-background = false
+# Implies:
+#    blur-background
+#
+# blur-background-frame = false
+# blur-background-fixed = false
+# example:
+#   blur-kern = "5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1";
+#
+# blur-kern = ""
+blur-kern = "3x3box";
+
+blur-background-exclude = [
+  "window_type = 'dock'",
+  "window_type = 'desktop'",
+  "_GTK_FRAME_EXTENTS@:c"
+];
+
+#+END_SRC 
+
+
+* General Settings
+
+#+BEGIN_SRC bash
+
+# dbus = true
+
+# Daemonize process. Fork to background after initialization. Causes issues with certain (badly-written) drivers.
+# daemon = false
+
+# backend = "glx"
+backend = "xrender";
+vsync = true;
+# dbus = false
+mark-wmwin-focused = true;
+mark-ovredir-focused = true;
+detect-rounded-corners = true;
+detect-client-opacity = true;
+# use-ewmh-active-win = false
+# unredir-if-possible = false
+# unredir-if-possible-delay = 0
+# unredir-if-possible-exclude = []
+# detect-transient = false
+detect-transient = true;
+# detect-client-leader = false
+# resize-damage = 1
+# invert-color-include = []
+glx-no-stencil = true;
+# glx-no-rebind-pixmap = false
+# no-use-damage = false
+use-damage = true;
+# xrender-sync-fence = false
+# window-shader-fg = "default"
+#
+# window-shader-fg-rule = [
+#   "my_shader.frag:window_type != 'dock'"
+# ]
+# force-win-blend = false
+# no-ewmh-fullscreen = false
+
+# max-brightness = 1.0
+# transparent-clipping = false
+# transparent-clipping-exclude = []
+log-level = "warn";
+# show-all-xerrors = false
+
+#+END_SRC 
+
+#+BEGIN_SRC bash
+
+
+#   fade, shadow:::
+#     Controls window-type-specific shadow and fade settings.
+#
+#   opacity:::
+#     Controls default opacity of the window type.
+#
+#   focus:::
+#     Controls whether the window of this type is to be always considered focused.
+#     (By default, all window types except "normal" and "dialog" has this on.)
+#
+#   full-shadow:::
+#     Controls whether shadow is drawn under the parts of the window that you
+#     normally won't be able to see. Useful when the window has parts of it
+#     transparent, and you want shadows in those areas.
+#
+#   clip-shadow-above:::
+#     Controls whether shadows that would have been drawn above the window should
+#     be clipped. Useful for dock windows that should have no shadow painted on top.
+#
+#   redir-ignore:::
+#     Controls whether this type of windows should cause screen to become
+#     redirected again after been unredirected. If you have unredir-if-possible
+#     set, and doesn't want certain window to cause unnecessary screen redirection,
+#     you can set this to `true`.
+#
+wintypes:
+{
+  tooltip = { fade = true; shadow = true; opacity = 0.75; focus = true; full-shadow = false; };
+  dock = { shadow = false; clip-shadow-above = true; }
+  dnd = { shadow = false; }
+  popup_menu = { opacity = 0.8; }
+  dropdown_menu = { opacity = 0.8; }
+};
+
+
+#+END_SRC 
+
+

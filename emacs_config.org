@@ -69,7 +69,7 @@
 
   (setq inhibit-startup-message t
         initial-major-mode 'org-mode
-        initial-buffer-choice "~/Dropbox/GTD.org")
+        initial-buffer-choice "~/Dropbox/SCRATCH.org")
 
   (setq dired-dwim-target t) 
   (setq delete-by-moving-to-trash t) 
@@ -106,6 +106,9 @@
   :custom
   (becon-push-mark 35))
 
+(display-time-mode 1)
+
+
 (use-package nerd-icons
   :defer t)
 
@@ -130,9 +133,9 @@
     (if night-time
         (progn
           (disable-theme 'doom-palenight) ; Ensure the previous theme is disabled
-          (load-theme 'doom-oceanic-next t))
+          (load-theme 'doom-one t))
       (progn
-        (disable-theme 'doom-oceanic-next) ; Ensure the previous theme is disabled
+        (disable-theme 'doom-one) ; Ensure the previous theme is disabled
         (load-theme 'doom-palenight t)))))
   
 (run-with-timer 0 (* 5 60) 'switch-theme-based-on-time)
@@ -504,8 +507,8 @@
 #+begin_src elisp
 (use-package flyspell
    :config
-   ;; (setq ispell-program-name "hunspell"
-   ;;       ispell-default-dictionary "en_AU")
+   (setq ispell-program-name "hunspell"
+          ispell-default-dictionary "en_US")
    :hook (text-mode . flyspell-mode)
    :bind (("M-<f7>" . flyspell-buffer))
           ("<f7>" . flyspell-word)

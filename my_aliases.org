@@ -15,7 +15,6 @@ alias mv='mv -i'
 alias lout='sudo pkill -u aulw'
 alias nf='neofetch'
 alias hw='hollywood'
-alias upg='sudo apt update && sudo apt upgrade'
 #+END_SRC
 
 * Navigation
@@ -25,7 +24,7 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .4='cd ../../../..'
 alias .5='cd ../../../../..'
-alias cdrr='cd ~/Dropbox/research/clustering_particles/density_estimation'
+alias cdrr='cd ~/Dropbox/research/clustering_particles/density_estimation'inst
 alias cdr='cd ~/Dropbox/research'
 alias cdcal='cdmat  ~/Dropbox/mat'
 alias cdw='cd  ~/Downloads'
@@ -104,12 +103,27 @@ alias gcln='git clone'
 #+END_SRC
 
 * Package Management and Installation
+** Ubuntu/Debian
 #+BEGIN_SRC bash
-alias srm='sudo apt remove'
-alias sarm='sudo apt autoremove'
-alias inst='sudo apt install'
-alias inst='sudo apt-get install'
+alias dsrm='sudo apt remove'
+alias dsarm='sudo apt autoremove'
+alias dinst='sudo apt install'
+alias dupg='sudo apt update && sudo apt upgrade'
 #+END_SRC
+
+** Arch Linux
+#+BEGIN_SRC elisp
+
+alias pminst='sudo pacman -S'
+alias pmupg='sudo pacman -Syu'
+alias yinst='yay -S'
+alias yupg='yay -Syu'
+alias pmrm='sudo pacman -R'
+alias asrm='sudo pacman -R'
+  
+#+END_SRC 
+
+
 
 * Shell Switching
 #+BEGIN_SRC bash
