@@ -7,6 +7,7 @@
 * Initialization and Configuration
 
 #+BEGIN_SRC elisp
+  (server-start)
   (setq gc-cons-threshold (* 100 1000 1000))
 #+END_SRC
 
@@ -41,9 +42,13 @@
 
 ** Text Display and UI Elements Control
 #+BEGIN_SRC elisp
+  (setq inhibit-startup-message t
+        initial-major-mode 'org-mode
+        initial-buffer-choice "~/Dropbox/SCRATCH.org")
+
   (set-face-attribute 'default nil
                       :font "Fira Code Retina"
-                      :height 170)
+                      :height 200)
   (setq-default fill-column 80)
   (setq-default line-spacing 2)
   (global-display-line-numbers-mode t)
@@ -67,9 +72,6 @@
   (setq history-length 25)
   (global-auto-revert-mode 1)
 
-  (setq inhibit-startup-message t
-        initial-major-mode 'org-mode
-        initial-buffer-choice "~/Dropbox/SCRATCH.org")
 
   (setq dired-dwim-target t) 
   (setq delete-by-moving-to-trash t) 
@@ -219,39 +221,40 @@
 
 ** Global Key Bindings
 #+BEGIN_SRC elisp
-(global-set-key (kbd "C-c t") 'toggle-transparency)
-(global-set-key (kbd "<f1>") (lambda() (interactive) (find-file "~/Dropbox/mat265/")))
-(global-set-key (kbd "<f2>") (lambda() (interactive) (find-file "~/Dropbox/GTD.org")))
-(global-set-key (kbd "<f3>") (lambda() (interactive) (find-file "~/Dropbox/config/")))
-(global-set-key (kbd "<f4>") (lambda() (interactive) (find-file "~/Dropbox/research/clustering_particles/density_estimation")))
-(global-set-key (kbd "<f5>") (lambda() (interactive) (find-file "~/Dropbox/projects/")))
+  (global-set-key (kbd "C-c t") 'toggle-transparency)
+  (global-set-key (kbd "<f1>") (lambda() (interactive) (find-file "~/Dropbox/mat265/")))
+  (global-set-key (kbd "<f3>") (lambda() (interactive) (find-file "~/Dropbox/config/")))
+  (global-set-key (kbd "<f4>") (lambda() (interactive) (find-file "~/Dropbox/research/clustering_particles/density_estimation")))
+  (global-set-key (kbd "<f5>") (lambda() (interactive) (find-file "~/Dropbox/projects/")))
+(global-set-key (kbd "C-c luf") (lambda () (interactive) (load-file "~/.emacs.d/init.el")))
+
 #+END_SRC
 
 
 
 ** Leader Key Bindings
 #+BEGIN_SRC elisp
-      (rune/leader-keys
-        "sq" '(sql-postgres :which-key "sql-postgres")
-        "ww" '(evil-window-next :which-key "evil-window-next")
-        "mm" '(markdown-mode :which-key "markdown-mode")
-        "mv" '(markdown-view-mode :which-key "markdown-view-mode")
-        "ts" '(hydra-text-scale/body :which-key "scale text")
-        "cc" '(TeX-command-run-all :which-key "Tex-command-run-all")
-        "cb" '(kill-this-buffer :which-key "kill-this-buffer")
-        "cn" '(global-display-line-numbers-mode :which-key "global-display-number-mode")
-        "tm" '(vterm :which-key "vterm")
-        "ss" '(sly :which-key "sly")
-        "cl" '(global-display-fill-column-indicator-mode :which-key "global-display-fill-column-indicator-mode")
-        "bm" '(blacken-mode :which-key "blacken-mode")
-        "tc" '(TeX-clean :which-key "TeX-clean")
-        "lb" '(list-buffers :which-key "list-buffers")
-        "tp" '(transparency :which-key "transparency")
-        "bf" '(eval-buffer :which-key "eval-buffer")
-        "yns" '(yas-new-snippet :which-key "yas-new-snippet")
-        "ohs" '(org-hide-src-block-delimiters :which-key "org-hide-src-block-delimiters")
-        "obt" '(org-babel-tangle :which-key "org-babel-tangle")
-        )
+  (rune/leader-keys
+    "sq" '(sql-postgres :which-key "sql-postgres")
+    "ww" '(evil-window-next :which-key "evil-window-next")
+    "mm" '(markdown-mode :which-key "markdown-mode")
+    "mv" '(markdown-view-mode :which-key "markdown-view-mode")
+    "ts" '(hydra-text-scale/body :which-key "scale text")
+    "cc" '(TeX-command-run-all :which-key "Tex-command-run-all")
+    "cb" '(kill-this-buffer :which-key "kill-this-buffer")
+    "cn" '(global-display-line-numbers-mode :which-key "global-display-number-mode")
+    "tm" '(vterm :which-key "vterm")
+    "ss" '(sly :which-key "sly")
+    "cl" '(global-display-fill-column-indicator-mode :which-key "global-display-fill-column-indicator-mode")
+    "bm" '(blacken-mode :which-key "blacken-mode")
+    "tc" '(TeX-clean :which-key "TeX-clean")
+    "lb" '(list-buffers :which-key "list-buffers")
+    "tp" '(transparency :which-key "transparency")
+    "bf" '(eval-buffer :which-key "eval-buffer")
+    "yns" '(yas-new-snippet :which-key "yas-new-snippet")
+    "ohs" '(org-hide-src-block-delimiters :which-key "org-hide-src-block-delimiters")
+    "obt" '(org-babel-tangle :which-key "org-babel-tangle")
+    )
 #+END_SRC
 
 
@@ -275,23 +278,24 @@
 ** TRANSPARENCY
 
 #+BEGIN_SRC   elisp   
-(defun toggle-transparency ()
-  (interactive)
-  (let ((alpha (frame-parameter nil 'alpha)))
-    (set-frame-parameter
-     nil 'alpha
-     (if (eql (cond ((numberp alpha) alpha)
-                    ((numberp (cdr alpha)) (cdr alpha))
-                    ;; Also handle undocumented (<active> <inactive>) form.
-                    ((numberp (cadr alpha)) (cadr alpha))) 95)
-         '(95 . 95) '(100 . 100)))))
+  (defun toggle-transparency ()
+    (interactive)
+    (let ((alpha (frame-parameter nil 'alpha)))
+      (set-frame-parameter
+       nil 'alpha
+       (if (eql (cond ((numberp alpha) alpha)
+                      ((numberp (cdr alpha)) (cdr alpha))
+                      ;; Also handle undocumented (<active> <inactive>) form.
+                      ((numberp (cadr alpha)) (cadr alpha))) 95)
+           '(95 . 95) '(100 . 100)))))
 
 (defun transparency (value)
-  "Sets the transparency of the frame window. 0=transparent/100=opaque"
-  (interactive "nTransparency Value 0 - 100 opaque:")
-  (set-frame-parameter (selected-frame) 'alpha value))
+    (interactive "nTransparency Value 0 - 100 opaque:")
+    (set-frame-parameter (selected-frame) 'alpha value))
 
 (transparency 90)
+
+;;(add-to-list 'default-frame-alist '(alpha . (95 . 95)))
 #+END_SRC   
 
 

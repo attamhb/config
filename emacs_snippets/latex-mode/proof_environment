@@ -2,6 +2,6 @@
 # name:begin_proof 
 # key:prf
 # --
-\begin{proof}${[1]}
+\begin{proof}
 ${0}
 \end{proof}

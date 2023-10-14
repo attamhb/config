@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name:fig_env 
+# key:fig 
+# --
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=${0.5}]{"./fig/${fig_title}"}
+\caption{\label{fig:${fig_label}} ${fig_caption}  }
+\end{figure}
