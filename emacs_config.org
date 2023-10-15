@@ -7,7 +7,9 @@
 * Initialization and Configuration
 
 #+BEGIN_SRC elisp
-  (server-start)
+(require 'server)
+(or (server-running-p)
+    (server-start))
   (setq gc-cons-threshold (* 100 1000 1000))
 #+END_SRC
 
@@ -134,11 +136,11 @@
          (night-time (or (>= current-hour 22) (< current-hour 6))))
     (if night-time
         (progn
-          (disable-theme 'doom-palenight) ; Ensure the previous theme is disabled
+          (disable-theme 'doom-one) ; Ensure the previous theme is disabled
           (load-theme 'doom-one t))
       (progn
         (disable-theme 'doom-one) ; Ensure the previous theme is disabled
-        (load-theme 'doom-palenight t)))))
+        (load-theme 'doom-one t)))))
   
 (run-with-timer 0 (* 5 60) 'switch-theme-based-on-time)
  
@@ -1069,8 +1071,7 @@
 * TESTING 
 
 #+BEGIN_SRC elisp
-
-  (defun org-hide-src-block-delimiters()
+(defun org-hide-src-block-delimiters()
     (interactive)
     (save-excursion (goto-char (point-max))
         (while (re-search-backward "#\\+BEGIN_SRC\\|#\\+END_SRC" nil t)
@@ -1079,7 +1080,7 @@
            (overlay-put ov 'invisible t)))))
 
   
-  (org-hide-src-block-delimiters)
+(org-hide-src-block-delimiters)
 #+END_SRC 
 
 
