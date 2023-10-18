@@ -4,8 +4,6 @@
 #+AUTHOR: ATTA
 
 
-;; I have taken most of these emacs lisp snippets from different github repos, dotfiles, reddit and stack exchange
-;; but mainly base on david wilson youtube series on emacs from scratch.
 * Initialization and Configuration
 
 #+BEGIN_SRC elisp
@@ -40,67 +38,7 @@
   (setq use-package-always-ensure 't)
 #+END_SRC
 
-
-#+begin_src emacs-lisp
-  (use-package window
-    :ensure nil
-    :bind (("C-x 2" . vsplit-last-buffer)
-           ("C-x 3" . hsplit-last-buffer)
-           ;; Don't ask before killing a buffer.
-           ([remap kill-buffer] . kill-this-buffer))
-    :preface
-    (defun hsplit-last-buffer ()
-      "Focus to the last created horizontal window."
-      (interactive)
-      (split-window-horizontally)
-      (other-window 1))
-
-    (defun vsplit-last-buffer ()
-      "Focus to the last created vertical window."
-      (interactive)
-      (split-window-vertically)
-      (other-window 1)))
-#+end_src
-
-To maximize concentration, I prefer to only center individual windows and keep a
-default behavior when multiple windows are present. [[https://github.com/anler/centered-window-mode][centered-window]] deals with
-this behavior.
-
-#+begin_src emacs-lisp
-    (use-package centered-window
-      :custom
-      (cwm-centered-window-width 130)
-      (cwm-frame-internal-border 0)
-      (cwm-incremental-padding t)
-      (cwm-incremental-padding-% 2)
-      (cwm-left-fringe-ratio 0)
-      (cwm-use-vertical-padding t)
-      :config (centered-window-mode))
-#+end_src
-
-The way I move between several windows in GNU Emacs is by indicating the number
-of the window I want to move to. Most people use [[https://github.com/abo-abo/ace-window][ace-window]], but I prefer
-[[https://github.com/dimitri/switch-window][switch-window]] which displays the window number while hiding its content. I find
-this behavior more convenient than moving from window to window to get to the
-one we are looking for.
-
-#+begin_src emacs-lisp
-  (use-package switch-window
-    :bind (("C-x o" . switch-window)
-           ("C-x w" . switch-window-then-swap-buffer)))
-#+end_src
-
-There are times when I would like to bring back a windows layout with their
-content. With the =winner-undo= and =winner-redo= commands from the built-in =winner=
-package, I can easily do that.
-
-#+begin_src emacs-lisp
-  (use-package winner
-    :ensure nil
-    :config (winner-mode))
-#+end_src
 * Appearance Configuration
-
 ** Text Display and UI Elements Control
 #+BEGIN_SRC elisp
   (setq inhibit-startup-message t
@@ -142,24 +80,7 @@ package, I can easily do that.
   (setq image-dired-external-viewer "/usr/bin/gimp")
 #+END_SRC
 
-
-** Backup Settings
-#+BEGIN_SRC elisp
-(make-directory
- (expand-file-name "backups/" user-emacs-directory) t)
-
-(setq backup-directory-alist `(("." . ,(expand-file-name "backups/" user-emacs-directory)))
-   ;;   backup-directory-alist '(("." . "~/.emacs.d/backup"))
-      backup-by-copying t    ; Don't delink hardlinks
-      version-control t      ; Use version numbers on backups
-      delete-old-versions t  ; Automatically delete excess backups
-      kept-new-versions 20   ; how many of the newest versions to keep
-      kept-old-versions 5    ; and how many of the old
-      )
-#+END_SRC
-
-
-**  Theme and Modeline
+** Theme and Modeline
 
 #+BEGIN_SRC   elisp
 (use-package beacon
@@ -207,199 +128,463 @@ package, I can easily do that.
   #+END_SRC
 
 
-
-* Evil Mode
+** Backup Settings
 #+BEGIN_SRC elisp
-  (use-package evil
-    :init
-    (setq evil-want-integration t)
-    (setq evil-want-keybinding nil)
-    (setq evil-want-C-u-scroll t)
-    (setq evil-want-C-i-jump nil)
+(make-directory
+ (expand-file-name "backups/" user-emacs-directory) t)
+
+(setq backup-directory-alist `(("." . ,(expand-file-name "backups/" user-emacs-directory)))
+      backup-by-copying t
+      version-control t
+      delete-old-versions t
+      kept-new-versions 20
+      kept-old-versions 5
+      )
+#+END_SRC
+
+** Dashboard
+
+#+begin_src emacs-lisp
+  (use-package dashboard
+    :custom
+    ;;(dashboard-banner-logo-title "With Great Power Comes Great Responsibility!")
+    (dashboard-banner-logo-title "Welcom to the Church of Emacs!")
+    (dashboard-center-content t)
+    (dashboard-items '((agenda)
+                       (projects . 5)))
+    (dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
+    (dashboard-set-file-icons t)
+    (dashboard-set-footer nil)
+    (dashboard-set-heading-icons t)
+    (dashboard-set-navigator t)
+    (dashboard-startup-banner 'logo)
+    :config (dashboard-setup-startup-hook))
+#+end_src
+
+** Color Display in Text
+
+
+#+begin_src emacs-lisp
+  (use-package rainbow-mode
+    :delight
+    :hook ((prog-mode text-mode) . rainbow-mode))
+#+end_src
+
+** Parentheses
+
+
+#+begin_src emacs-lisp
+  (use-package faces
+    :ensure nil
+    :custom (show-paren-delay 0)
     :config
-    (evil-mode 1)
-    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-    (evil-set-initial-state 'messages-buffer-mode 'normal)
-    (evil-set-initial-state 'dashboard-mode 'normal))
+    (set-face-background 'show-paren-match "#161719")
+    (set-face-bold 'show-paren-match t)
+    (set-face-foreground 'show-paren-match "#ffffff"))
+#+end_src
 
-  (use-package evil-collection
-    :after evil
-    :config
-    (evil-collection-init))
 
-  (use-package evil-nerd-commenter
-    :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
 
-(use-package undo-tree
-  :ensure t
-  :after evil
-  :diminish
+
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :delight
+    :hook (prog-mode . smartparens-mode)
+    :bind (("M-'" . sp-backward-sexp)
+           ("M-\\" . sp-forward-sexp)
+           ("M-(" . sp-wrap-round)
+           ("M-[" . sp-wrap-curly))
+    :custom (sp-escape-quotes-after-insert nil))
+#+end_src
+
+** Window
+
+#+begin_src emacs-lisp
+(use-package window
+    :ensure nil
+    :bind (("C-x 2" . vsplit-last-buffer)
+           ("C-x 3" . hsplit-last-buffer)
+           ;; Don't ask before killing a buffer.
+           ([remap kill-buffer] . kill-this-buffer))
+    :preface
+    (defun hsplit-last-buffer ()
+      "Focus to the last created horizontal window."
+      (interactive)
+      (split-window-horizontally)
+      (other-window 1))
+
+    (defun vsplit-last-buffer ()
+      "Focus to the last created vertical window."
+      (interactive)
+      (split-window-vertically)
+      (other-window 1)))
+
+(use-package centered-window
+      :custom
+      (cwm-centered-window-width 130)
+      (cwm-frame-internal-border 0)
+      (cwm-incremental-padding t)
+      (cwm-incremental-padding-% 2)
+      (cwm-left-fringe-ratio 0)
+      (cwm-use-vertical-padding t)
+      :config (centered-window-mode))
+
+(use-package switch-window
+    :bind (("C-x o" . switch-window)
+           ("C-x w" . switch-window-then-swap-buffer)))
+
+(use-package winner
+    :ensure nil
+    :config (winner-mode))
+
+#+end_src
+
+** Dired Mode
+
+#+begin_src emacs-lisp
+  (use-package dired
+    :ensure nil
+    :commands (dired dired-jump)
+    :delight "Dired"
+    :custom
+    (dired-auto-revert-buffer t)
+    (dired-dwim-target t)
+    (dired-hide-details-hide-symlink-targets nil)
+    (dired-listing-switches "-alh --group-directories-first")
+    (dired-ls-F-marks-symlinks nil)
+    (dired-recursive-copies 'always))
+#+end_src
+
+
+#+begin_src emacs-lisp
+  (use-package dired-single
+    :after dired
+    :bind (:map dired-mode-map
+                ([remap dired-find-file] . dired-single-buffer)
+                ([remap dired-up-directory] . dired-single-up-directory)
+                ("M-DEL" . dired-prev-subdir)))
+#+end_src
+
+
+#+begin_src emacs-lisp
+  (use-package dired-open
+    :after (dired dired-jump)
+    :custom (dired-open-extensions '(("mp4" . "mpv"))))
+
+  (use-package all-the-icons-dired
+    :if (display-graphic-p)
+    :hook (dired-mode . all-the-icons-dired-mode))
+
+  (use-package dired-hide-dotfiles
+    :hook (dired-mode . dired-hide-dotfiles-mode)
+    :bind (:map dired-mode-map
+                ("H" . dired-hide-dotfiles-mode)))
+
+
+  (use-package dired-subtree
+    :after dired
+    :bind (:map dired-mode-map
+                ("<tab>" . dired-subtree-toggle)))
+
+
+  (use-package dired-narrow
+    :ensure nil
+    :bind (("C-c C-n" . dired-narrow)
+           ("C-c C-f" . dired-narrow-fuzzy)))
+#+end_src
+
+** Emojify
+#+BEGIN_SRC elisp
+(use-package emojify
+  :after erc
   :config
-  (evil-set-undo-system 'undo-tree)
-  (global-undo-tree-mode 1))
+  (global-emojify-mode))
 #+END_SRC
 
 
 
-* Keybindings
-
-** Which Key
 #+BEGIN_SRC elisp
-(use-package which-key
-  :init
-  :config
-  (which-key-mode)
-  (setq which-key-idle-dely 0.5)
-  (which-key-setup-minibuffer))
+
+    (setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
+
+;;    (setq make-backup-files nil)
+
+    (make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
+
+    (setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
+          auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
+
+  (setq create-lockfiles nil)
+
+  (setq projectile-known-projects-file
+        (expand-file-name "tmp/projectile-bookmarks.eld" user-emacs-directory)
+        lsp-session-file (expand-file-name "tmp/.lsp-session-v1" user-emacs-directory))
+
+
+(setq user-emacs-directory (expand-file-name "~/.cache/emacs"))
+
+(use-package no-littering)
+
+
 #+END_SRC
 
+* Advanced Configuration
+** Browser
 
-** General Keybindings
-#+BEGIN_SRC elisp
-  (use-package general
+#+begin_src emacs-lisp
+  (use-package browse-url
+    :ensure nil
+    :custom
+    (browse-url-browser-function 'browse-url-generic)
+    (browse-url-generic-program "brave"))
+#+end_src
+
+** Calendar
+
+#+begin_src emacs-lisp
+  (use-package calendar
+    :ensure nil
+    :bind ("C-c 0" . calendar)
+    :custom
+    (calendar-mark-holidays-flag t)
+    (calendar-week-start-day 1))
+#+end_src
+
+
+#+begin_src emacs-lisp
+  (use-package holidays
+    :ensure nil
+    :custom
+    (holiday-bahai-holidays nil)
+    (holiday-hebrew-holidays nil)
+    (holiday-islamic-holidays nil)
+    (holiday-oriental-holidays nil)
+    (holiday-christian-holidays nil)
+    (holiday-general-holidays
+     '((holiday-fixed 1 1 "New Year's Day")
+       (holiday-fixed 2 14 "Valentine's Day")
+       (holiday-fixed 10 31 "Halloween")
+       (holiday-fixed 11 11 "Armistice of 1918")))
+    (holiday-local-holidays
+     '((holiday-fixed 5 1 "Labor Day")
+       (holiday-fixed 12 12 "hh"))))
+#+end_src
+
+** Documentation
+
+
+#+begin_src emacs-lisp
+  (use-package helpful
+    :commands (helpful-at-point
+               helpful-callable
+               helpful-command
+               helpful-function
+               helpful-key
+               helpful-macro
+               helpful-variable)
+    :bind
+    ([remap display-local-help] . helpful-at-point)
+    ([remap describe-function] . helpful-callable)
+    ([remap describe-variable] . helpful-variable)
+    ([remap describe-symbol] . helpful-symbol)
+    ([remap describe-key] . helpful-key)
+    ([remap describe-command] . helpful-command))
+#+end_src
+
+** EditorConfig
+
+
+#+begin_src emacs-lisp
+  (use-package editorconfig
+    :defer 0.3
+    :config (editorconfig-mode))
+#+end_src
+
+** History
+
+#+begin_src emacs-lisp
+  (use-package solaire-mode
+    :defer 0.1
+    :custom (solaire-mode-remap-fringe t)
+    :config (solaire-global-mode))
+#+end_src
+
+
+#+begin_src emacs-lisp
+  (use-package highlight-indent-guides
+    :hook (prog-mode . highlight-indent-guides-mode)
+    :custom (highlight-indent-guides-method 'character))
+#+end_src
+
+** Package Menu
+
+
+#+begin_src emacs-lisp
+  (use-package paradox)
+#+end_src
+
+** Paste
+
+#+begin_src emacs-lisp
+  (use-package webpaste
+    :defer 0.4
+    :bind (("C-c C-p C-b" . webpaste-paste-buffer)
+           ("C-c C-p C-p" . webpaste-paste-buffer-or-region)
+           ("C-c C-p C-r" . webpaste-paste-region))
+    :custom (webpaste-provider-priority '("dpaste.org" "dpaste.com" "ix.io")))
+#+end_src
+
+
+#+begin_src emacs-lisp
+  (use-package imgbb
+    :commands imgbb-upload
+    :bind ("C-c C-p C-i" . imgbb-upload))
+#+end_src
+
+** Spaces Around the Operators
+#+begin_src emacs-lisp
+  (use-package electric-operator
+    :hook ((css-mode java-mode js2-mode
+                    python-mode sql-mode typescript-mode) . electric-operator-mode))
+#+end_src
+
+** Term Definitions
+
+#+begin_src emacs-lisp
+  (use-package wiki-summary
+    :commands (wiki-summary wiki-summary-insert)
+    :preface
+    (defun my/format-summary-in-buffer (summary)
+      (let ((buf (generate-new-buffer "*wiki-summary*")))
+        (with-current-buffer buf
+          (princ summary buf)
+          (fill-paragraph)
+          (goto-char (point-min))
+          (view-mode))
+        (pop-to-buffer buf)))
     :config
-    (general-create-definer rune/leader-keys
-      :keymaps '(normal insert visual emacs)
-      :prefix "SPC"
-      :global-prefix "C-SPC")
-    (rune/leader-keys
-      "t"  '(:ignore t :which-key "toggles")
-      "tt" '(counsel-load-theme :which-key "choose theme")))
-#+END_SRC
+    (advice-add 'wiki-summary/format-summary-in-buffer
+                :override #'my/format-summary-in-buffer))
+#+end_src
+
+** Whitespaces and Kill
 
 
-** Text Scale Hydra
-#+BEGIN_SRC elisp
-(defhydra hydra-text-scale (:timeout 4)
-  ("j" text-scale-increase "in")
-  ("k" text-scale-decrease "out")
-  ("f" nil "finished" :exit t))
-#+END_SRC
+#+begin_src emacs-lisp
+  (use-package simple
+    :ensure nil
+    :delight (auto-fill-function)
+    :preface
+    (defun my/kill-region-or-line ()
+      (interactive)
+      (if current-prefix-arg
+          (progn
+            (kill-new (buffer-string))
+            (delete-region (point-min) (point-max)))
+        (progn (if (use-region-p)
+                   (kill-region (region-beginning) (region-end) t)
+                 (kill-region (line-beginning-position) (line-beginning-position
+                                                         2))))))
+    :hook ((before-save . delete-trailing-whitespace)
+           ((prog-mode text-mode) . turn-on-auto-fill))
+    :bind ("C-w" . my/kill-region-or-line)
+    :custom (set-mark-command-repeat-pop t))
+#+end_src
 
 
-** Global Key Bindings
-#+BEGIN_SRC elisp
-  (global-set-key (kbd "C-c t") 'toggle-transparency)
-  (global-set-key (kbd "<f1>") (lambda() (interactive) (find-file "~/Dropbox/mat265/")))
-  (global-set-key (kbd "<f3>") (lambda() (interactive) (find-file "~/Dropbox/config/")))
-  (global-set-key (kbd "<f4>") (lambda() (interactive) (find-file "~/Dropbox/research/clustering_particles/density_estimation")))
-  (global-set-key (kbd "<f5>") (lambda() (interactive) (find-file "~/Dropbox/projects/")))
-(global-set-key (kbd "C-c luf") (lambda () (interactive) (load-file "~/.emacs.d/init.el")))
+#+begin_src emacs-lisp
+  (use-package hungry-delete
+    :defer 0.7
+    :delight
+    :config (global-hungry-delete-mode))
+#+end_src
 
-#+END_SRC
-
-
-
-** Leader Key Bindings
-#+BEGIN_SRC elisp
-  (rune/leader-keys
-    "sq" '(sql-postgres :which-key "sql-postgres")
-    "ww" '(evil-window-next :which-key "evil-window-next")
-    "mm" '(markdown-mode :which-key "markdown-mode")
-    "mv" '(markdown-view-mode :which-key "markdown-view-mode")
-    "ts" '(hydra-text-scale/body :which-key "scale text")
-    "cc" '(TeX-command-run-all :which-key "Tex-command-run-all")
-    "cb" '(kill-this-buffer :which-key "kill-this-buffer")
-    "cn" '(global-display-line-numbers-mode :which-key "global-display-number-mode")
-    "tm" '(vterm :which-key "vterm")
-    "ss" '(sly :which-key "sly")
-    "cl" '(global-display-fill-column-indicator-mode :which-key "global-display-fill-column-indicator-mode")
-    "bm" '(blacken-mode :which-key "blacken-mode")
-    "tc" '(TeX-clean :which-key "TeX-clean")
-    "lb" '(list-buffers :which-key "list-buffers")
-    "tp" '(transparency :which-key "transparency")
-    "bf" '(eval-buffer :which-key "eval-buffer")
-    "yns" '(yas-new-snippet :which-key "yas-new-snippet")
-    "ohs" '(org-hide-src-block-delimiters :which-key "org-hide-src-block-delimiters")
-    "obt" '(org-babel-tangle :which-key "org-babel-tangle")
-    )
-#+END_SRC
+** Windows
 
 
 
 
-* User-defined Functions
 
-** Startup Time Display Function
-
-#+BEGIN_SRC elisp
-(defun efs/display-startup-time ()
-  (message "Emacs loaded in %s with %d garbage collections."
-           (format "%.2f seconds"
-                   (float-time
-                   (time-subtract after-init-time before-init-time)))
-           gcs-done))
-
-(add-hook 'emacs-startup-hook #'efs/display-startup-time)
-#+END_SRC
-
-** TRANSPARENCY
-
-#+BEGIN_SRC   elisp
-  (defun toggle-transparency ()
-    (interactive)
-    (let ((alpha (frame-parameter nil 'alpha)))
-      (set-frame-parameter
-       nil 'alpha
-       (if (eql (cond ((numberp alpha) alpha)
-                      ((numberp (cdr alpha)) (cdr alpha))
-                      ;; Also handle undocumented (<active> <inactive>) form.
-                      ((numberp (cadr alpha)) (cadr alpha))) 95)
-           '(95 . 95) '(100 . 100)))))
-
-(defun transparency (value)
-    (interactive "nTransparency Value 0 - 100 opaque:")
-    (set-frame-parameter (selected-frame) 'alpha value))
-
-(transparency 100)
-
-;;(add-to-list 'default-frame-alist '(alpha . (95 . 95)))
-#+END_SRC
+#+begin_src emacs-lisp
+  (use-package vertico
+    ;; :straight (:files (:defaults "extensions/*"))
+    :init (vertico-mode)
+    :bind (:map vertico-map
+                ("C-<backspace>" . vertico-directory-up))
+    :custom (vertico-cycle t)
+    :custom-face (vertico-current ((t (:background "#1d1f21")))))
+#+end_src
 
 
-#+BEGIN_SRC elisp
-
-(defun efs/org-font-setup ()
-;; Replace list hyphen with dot
-      (font-lock-add-keywords 'org-mode
-                              '(("^ *\\([-]\\) "
-                                 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-
-    (let ((background-color (face-attribute 'default :background)))
-      (set-face-attribute 'org-block-begin-line nil
-                          :foreground background-color
-                          :background background-color)
-      (set-face-attribute 'org-block-end-line nil
-                          :foreground background-color
-                          :background background-color))
-
-      ;; Set faces for heading levels
-      (dolist (face '((org-level-1 . 1.2)
-                      (org-level-2 . 1.1)
-                      (org-level-3 . 1.05)
-                      (org-level-4 . 1.0)
-                      (org-level-5 . 1.1)
-                      (org-level-6 . 1.1)
-                      (org-level-7 . 1.1)
-                      (org-level-8 . 1.1)))
-        (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
-
-      ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-      (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-      (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-      (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-      (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-      (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-      (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-      (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
-
-  #+END_SRC
+#+begin_src emacs-lisp
+  (use-package marginalia
+    :after vertico
+    :init (marginalia-mode)
+    :custom
+    (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
+#+end_src
 
 
-* Integrated Development Environment
+#+begin_src emacs-lisp
+  (use-package all-the-icons-completion
+    :after (marginalia all-the-icons)
+    :hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
+#+end_src
+
+
+#+begin_src emacs-lisp
+  (use-package orderless
+    :custom
+    (completion-category-defaults nil)
+    (completion-category-overrides '((file (styles . (partial-completion)))))
+    (completion-styles '(orderless)))
+#+end_src
+
+
+
+#+begin_src emacs-lisp
+  (use-package embark
+    :bind ("C-." . embark-act))
+#+end_src
+
+** Fly Spell
+
+
+#+begin_src emacs-lisp
+  (use-package flyspell
+    :ensure nil
+    :delight
+    :hook ((text-mode . flyspell-mode)
+           (prog-mode . flyspell-prog-mode))
+    :custom
+    ;; Add correction to abbreviation table.
+    (flyspell-abbrev-p t)
+    (flyspell-default-dictionary "en_US")
+    (flyspell-issue-message-flag nil)
+    (flyspell-issue-welcome-flag nil))
+#+end_src
+
+** Spell Checker
+
+
+#+begin_src emacs-lisp
+  (use-package ispell)
+#+end_src
+
+** Grammar Checker
+
+
+#+begin_src emacs-lisp
+  (use-package lsp-ltex
+    :disabled
+    :custom
+    (lsp-ltex-enabled nil)
+    (lsp-ltex-mother-tongue "fr"))
+#+end_src
 
 ** Spelling Configuration
 
@@ -519,9 +704,10 @@ package, I can easily do that.
 #+begin_src elisp
 (use-package blacken
   :defer t
+  :hook (python-mode . blacken-mode)
   :init
   (setq-default blacken-fast-unsafe nil)
-  (setq-default blacken-line-length 80))
+  (setq-default blacken-line-length 79))
 #+end_src
 
 ** Autocompletion with Company
@@ -560,18 +746,36 @@ package, I can easily do that.
 ** Project Navigation with Projectile
 #+begin_src elisp
 (use-package projectile
-  :diminish projectile-mode
-  :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-  (when (file-directory-p "~/Dropbox/Projects/Code")
-    (setq projectile-project-search-path '("~/Dropbox/Projects/Code")))
-  (setq projectile-switch-project-action #'projectile-dired))
+        :diminish projectile-mode
+        :config (projectile-mode)
+        :custom
+        ((projectile-completion-system 'ivy)
+    (projectile-enable-caching t)
+    (projectile-keymap-prefix (kbd "C-c C-p"))
+    (projectile-mode-line '(:eval (projectile-project-name)))
+    (projectile-project-search-path '("~/.local/share/git"))
+    (projectile-switch-project-action #'projectile-dired))
+        :bind-keymap
+        ("C-c p" . projectile-command-map)
+        :init
+        (when (file-directory-p "~/Dropbox/Projects/Code")
+          (setq projectile-project-search-path '("~/Dropbox/Projects/Code")))
+        (setq projectile-switch-project-action #'projectile-dired))
 
-(use-package counsel-projectile
-  :config (counsel-projectile-mode))
+  (use-package consult-projectile
+    :after (consult projectile)
+    :commands (consult-projectile))
+
+
+(use-package ibuffer-projectile
+    :after ibuffer
+    :preface
+    (defun my/ibuffer-projectile ()
+      (ibuffer-projectile-set-filter-groups)
+      (unless (eq ibuffer-sorting-mode 'alphabetic)
+        (ibuffer-do-sort-by-alphabetic)))
+    :hook (ibuffer . my/ibuffer-projectile))
+
 #+end_src
 
 ** Spell Checking with Flyspell
@@ -651,6 +855,243 @@ package, I can easily do that.
     (pthon-mode . aggressive-indent-mode))
 #+END_SRC
 
+** Minions
+#+BEGIN_SRC elisp
+(use-package minions
+  :custom
+  (minions-mode 1))
+#+END_SRC
+
+** CSV Mode
+#+BEGIN_SRC elisp
+(use-package csv-mode
+  :mode "\\.csv\\'"
+  :preface
+  (defun csv-remove-commas ()
+    (interactive)
+    (goto-char (point-min))
+    (while (re-search-forward "\"\\([^\"]+\\)\"" nil t)
+      (replace-match (replace-regexp-in-string "," "" (match-string 1))))))
+#+END_SRC
+
+** Focus
+#+BEGIN_SRC elisp
+(use-package focus)
+#+END_SRC
+
+** Term
+#+BEGIN_SRC elisp
+(use-package term
+  :defer t
+  :config
+  (setq explicit-shell-file-name "bash")
+  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
+#+END_SRC
+
+** Vterm
+#+BEGIN_SRC elisp
+(use-package vterm
+  :defer t
+  :config
+  (setq explicit-shell-file-name "bash")
+  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
+#+END_SRC
+
+** Terminal Modes Line Numbers Configuration
+#+BEGIN_SRC elisp
+(dolist (mode '(term-mode-hook
+                shell-mode-hook
+                eshell-mode-hook
+                vterm-mode-hook
+                pdf-view-mode-hook
+                treemacs-mode-hook))
+  (add-hook mode (lambda ()
+                   (display-line-numbers-mode -1))))
+#+END_SRC
+
+* Evil Mode
+#+BEGIN_SRC elisp
+  (use-package evil
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-want-C-u-scroll t)
+    (setq evil-want-C-i-jump nil)
+    :config
+    (evil-mode 1)
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+    (evil-set-initial-state 'messages-buffer-mode 'normal)
+    (evil-set-initial-state 'dashboard-mode 'normal))
+
+  (use-package evil-collection
+    :after evil
+    :config
+    (evil-collection-init))
+
+  (use-package evil-nerd-commenter
+    :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+
+(use-package undo-tree
+  :ensure t
+  :after evil
+  :diminish
+  :config
+  (evil-set-undo-system 'undo-tree)
+  (global-undo-tree-mode 1))
+#+END_SRC
+
+
+* Keybindings
+
+** Which Key
+#+BEGIN_SRC elisp
+(use-package which-key
+  :init
+  :config
+  (which-key-mode)
+  (setq which-key-idle-dely 0.5)
+  (which-key-setup-minibuffer))
+#+END_SRC
+
+
+** General Keybindings
+#+BEGIN_SRC elisp
+  (use-package general
+    :config
+    (general-create-definer rune/leader-keys
+      :keymaps '(normal insert visual emacs)
+      :prefix "SPC"
+      :global-prefix "C-SPC")
+    (rune/leader-keys
+      "t"  '(:ignore t :which-key "toggles")
+      "tt" '(counsel-load-theme :which-key "choose theme")))
+#+END_SRC
+
+
+** Text Scale Hydra
+#+BEGIN_SRC elisp
+(defhydra hydra-text-scale (:timeout 4)
+  ("j" text-scale-increase "in")
+  ("k" text-scale-decrease "out")
+  ("f" nil "finished" :exit t))
+#+END_SRC
+
+
+** Global Key Bindings
+#+BEGIN_SRC elisp
+  (global-set-key (kbd "C-c t") 'toggle-transparency)
+  (global-set-key (kbd "<f1>") (lambda() (interactive) (find-file "~/Dropbox/mat265/")))
+  (global-set-key (kbd "<f3>") (lambda() (interactive) (find-file "~/Dropbox/config/")))
+  (global-set-key (kbd "<f4>") (lambda() (interactive) (find-file "~/Dropbox/research/clustering_particles/density_estimation")))
+  (global-set-key (kbd "<f5>") (lambda() (interactive) (find-file "~/Dropbox/projects/")))
+(global-set-key (kbd "C-c luf") (lambda () (interactive) (load-file "~/.emacs.d/init.el")))
+
+#+END_SRC
+
+** Leader Key Bindings
+#+BEGIN_SRC elisp
+  (rune/leader-keys
+    "sq" '(sql-postgres :which-key "sql-postgres")
+    "ww" '(evil-window-next :which-key "evil-window-next")
+    "mm" '(markdown-mode :which-key "markdown-mode")
+    "mv" '(markdown-view-mode :which-key "markdown-view-mode")
+    "ts" '(hydra-text-scale/body :which-key "scale text")
+    "cc" '(TeX-command-run-all :which-key "Tex-command-run-all")
+    "cb" '(kill-this-buffer :which-key "kill-this-buffer")
+    "cn" '(global-display-line-numbers-mode :which-key "global-display-number-mode")
+    "tm" '(vterm :which-key "vterm")
+    "ss" '(sly :which-key "sly")
+    "cl" '(global-display-fill-column-indicator-mode :which-key "global-display-fill-column-indicator-mode")
+    "bm" '(blacken-mode :which-key "blacken-mode")
+    "tc" '(TeX-clean :which-key "TeX-clean")
+    "lb" '(list-buffers :which-key "list-buffers")
+    "tp" '(transparency :which-key "transparency")
+    "bf" '(eval-buffer :which-key "eval-buffer")
+    "yns" '(yas-new-snippet :which-key "yas-new-snippet")
+    "ohs" '(org-hide-src-block-delimiters :which-key "org-hide-src-block-delimiters")
+    "obt" '(org-babel-tangle :which-key "org-babel-tangle")
+    )
+#+END_SRC
+
+* User-defined Functions
+
+** Startup Time Display Function
+
+#+BEGIN_SRC elisp
+(defun efs/display-startup-time ()
+  (message "Emacs loaded in %s with %d garbage collections."
+           (format "%.2f seconds"
+                   (float-time
+                   (time-subtract after-init-time before-init-time)))
+           gcs-done))
+
+(add-hook 'emacs-startup-hook #'efs/display-startup-time)
+#+END_SRC
+
+** TRANSPARENCY
+
+#+BEGIN_SRC   elisp
+  (defun toggle-transparency ()
+    (interactive)
+    (let ((alpha (frame-parameter nil 'alpha)))
+      (set-frame-parameter
+       nil 'alpha
+       (if (eql (cond ((numberp alpha) alpha)
+                      ((numberp (cdr alpha)) (cdr alpha))
+                      ;; Also handle undocumented (<active> <inactive>) form.
+                      ((numberp (cadr alpha)) (cadr alpha))) 95)
+           '(95 . 95) '(100 . 100)))))
+
+(defun transparency (value)
+    (interactive "nTransparency Value 0 - 100 opaque:")
+    (set-frame-parameter (selected-frame) 'alpha value))
+
+(transparency 100)
+
+;;(add-to-list 'default-frame-alist '(alpha . (95 . 95)))
+#+END_SRC
+
+
+#+BEGIN_SRC elisp
+
+(defun efs/org-font-setup ()
+;; Replace list hyphen with dot
+      (font-lock-add-keywords 'org-mode
+                              '(("^ *\\([-]\\) "
+                                 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+    (let ((background-color (face-attribute 'default :background)))
+      (set-face-attribute 'org-block-begin-line nil
+                          :foreground background-color
+                          :background background-color)
+      (set-face-attribute 'org-block-end-line nil
+                          :foreground background-color
+                          :background background-color))
+
+      ;; Set faces for heading levels
+      (dolist (face '((org-level-1 . 1.2)
+                      (org-level-2 . 1.1)
+                      (org-level-3 . 1.05)
+                      (org-level-4 . 1.0)
+                      (org-level-5 . 1.1)
+                      (org-level-6 . 1.1)
+                      (org-level-7 . 1.1)
+                      (org-level-8 . 1.1)))
+        (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+
+      ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+      (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+      (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+      (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+      (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+      (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+      (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+      (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+  #+END_SRC
 
 * Org Mode
 ** Basic Org Mode Setup
@@ -725,7 +1166,6 @@ package, I can easily do that.
 
 
 #+end_src
-
 
 * Org Roam
 
@@ -852,497 +1292,6 @@ capture was not aborted."
                  (my/org-roam-copy-todo-to-today))))
 #+END_SRC
 
-
-
-* Languages Server Protocol
-
-** LSP Configuration
-
-#+begin_src elisp
-(use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :hook
-  (lsp-mode . lsp-enable-which-key-integration)
-  :custom
-  (lsp-diagnostics-provider :capf)
-  (lsp-headerline-breadcrumb-enable t)
-  (lsp-headerline-breadcrumb-segments '(project file symbols))
-  (lsp-lens-enable nil)
-  (lsp-disabled-clients '((python-mode . pyls)))
-  :init
-  (setq lsp-keymap-prefix "C-c l")) ;; Or 'C-l', 's-l'
-#+end_src
-
-
-** LSP Ivy Integration
-#+begin_src elisp
-(use-package lsp-ivy
-  :after lsp-mode)
-#+end_src
-
-
-** LSP UI Configuration
-#+begin_src elisp
-(use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
-  :after lsp-mode
-  :custom
-  (lsp-ui-doc-show-with-cursor nil)
-  :config
-  (setq lsp-ui-doc-position 'bottom))
-#+end_src
-
-
-** LSP Treemacs Integration
-#+begin_src elisp
-(use-package lsp-treemacs
-  :after (lsp-mode treemacs))
-#+end_src
-
-
-** LSP Pyright for Python
-#+begin_src elisp
-(use-package lsp-pyright
-  :hook
-  (python-mode . (lambda ()
-                   (require 'lsp-pyright)
-                   (lsp-deferred))))
-#+end_src
-
-
-* Version Control  (Git Integration with Magit)
-
-#+begin_src elisp
-(use-package magit
-  :custom
-  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-
-(use-package forge)
-#+end_src
-
-
-* Programming Languages
-
-
-#+begin_src emacs-lisp
-  (use-package python
-    :ensure flycheck
-    :delight "π"
-    :preface
-    (defun python-remove-unused-imports()
-      "Remove unused imports and unused variables with autoflake."
-      (interactive)
-      (if (executable-find "autoflake")
-          (progn
-            (shell-command (format "autoflake --remove-all-unused-imports -i %s"
-                                   (shell-quote-argument (buffer-file-name))))
-            (revert-buffer t t t))
-        (warn "[✗] python-mode: Cannot find autoflake executable.")))
-    :bind (:map python-mode-map
-                ("M-[" . python-nav-backward-block)
-                ("M-]" . python-nav-forward-block)
-                ("M-|" . python-remove-unused-imports))
-    :custom
-    (flycheck-pylintrc "~/.pylintrc")
-    (flycheck-python-pylint-executable "/usr/bin/pylint"))
-#+end_src
-
-I have tried several LSP servers. I have experienced that =mspyls= is faster than
-=pylsp=, but =mspyls= has a memory leakage and became depreciated in favor of
-=pyright=. To configure pyright with GNU Emacs, the [[https://github.com/emacs-lsp/lsp-pyright][lsp-pyright]] package is
-enough.
-
-#+begin_src emacs-lisp
-  (use-package lsp-pyright
-    :if (executable-find "pyright")
-    ;; To properly load `lsp-pyright', the `require' instruction is important.
-    :hook (python-mode . (lambda ()
-                           (require 'lsp-pyright)
-                           (lsp-deferred)))
-    :custom
-    (lsp-pyright-python-executable-cmd "python3")
-    (lsp-pyright-venv-path "~/.cache/pypoetry/virtualenvs/"))
-#+end_src
-
-To make sure my Python code is well formatted, I use [[https://github.com/psf/black][black]]. Feel free to install
-it in your virtual environment or directly on your system.
-
-#+begin_src emacs-lisp
-  (use-package blacken
-    :delight
-    :hook (python-mode . blacken-mode)
-    :custom (blacken-line-length 79))
-#+end_src
-
-To sort my Python imports, [[https://github.com/paetzke/py-isort.el][py-isort]] does a good job. Also, do not forget to
-install in your virtual environment or directly on your system.
-
-#+begin_src emacs-lisp
-  (use-package py-isort
-    :hook ((before-save . py-isort-before-save)
-           (python-mode . pyvenv-mode)))
-#+end_src
-
-I use a single virtual environment for all my Python projects. The combination
-of [[https://docs.python.org/3/library/venv.html][venv]] with [[https://github.com/jorgenschaefer/pyvenv][pyvenv]] does the job well. When I encounter a Python buffer, my
-virtual environment activates and stays activated even after I finish working in
-Python. A better behavior would be to define a function through a
-=kill-buffer-hook= that would call the =pyvenv-deactivate= command when all Python
-buffers are closed.
-
-#+begin_src emacs-lisp
-  (use-package pyvenv
-    :after python
-    :config (pyvenv-tracking-mode))
-#+end_src
-
-Finally, to better manage the different versions of Python through projects, I
-use [[https://github.com/pyenv/pyenv][pyenv]] through [[https://github.com/pythonic-emacs/pyenv-mode][pyenv-mode]]-mode. To use it, make sure you have =pyenv= installed
-on your system.
-
-#+begin_src emacs-lisp
-  (use-package pyenv-mode
-    :hook ((python-mode . pyenv-mode)
-           (projectile-switch-project . projectile-pyenv-mode-set))
-    :custom (pyenv-mode-set "3.8.5")
-    :preface
-    (defun projectile-pyenv-mode-set ()
-      "Set pyenv version matching project name."
-      (let ((project (projectile-project-name)))
-        (if (member project (pyenv-mode-versions))
-            (pyenv-mode-set project)
-          (pyenv-mode-unset)))))
-#+end_src
-
-#+BEGIN_SRC   elisp
-  (use-package python-mode
-    :hook
-    (python-mode . flycheck-mode)
-    (python-mode . company-mode)
-    (python-mode . blacken-mode)
-    (python-mode . yas-minor-mode)
-    :custom
-    (python-shell-interpreter "python3")
-    :config
-    )
-
-  (use-package elpy
-    :ensure t
-    :init
-    (elpy-enable)
-    :config
-    ;; Use IPython for REPL
-    (setq elpy-shell-interactive-shell-command "ipython3")
-    (setq elpy-shell-interactive-shell-args '("--simple-prompt" "-i")))
-
-  (use-package pyvenv
-    :defer t
-    :hook (pyvenv-mode . python-mode)
-    :config
-    (pyvenv-mode 1))
-
-
-  (setq sql-postgres-login-params
-        '((user :default "postgres")
-          (database :default "analysis")
-          (server :default "localhost")
-          (port :default 5432)))
-
-#+END_SRC
-
-
-** SQL
-
-#+BEGIN_SRC
-  (setq sql-postgres-login-params
-        '((user :default "postgres")
-          (database :default "analysis")
-          (server :default "localhost")
-          (port :default 5432)))
-#+END_SRC
-
-
-** HASKELL
-#+BEGIN_SRC   haskell
-  (use-package haskell-mode
-    :defer t)
-    (require 'haskell-mode)
-    (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
-    (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
-    (setq-default indent-tabs-mode nil)
-#+END_SRC
-
-
-** Yaml
-#+BEGIN_SRC   elisp
-(use-package  yaml-mode
-    :ensure t)
-
-(unless (package-installed-p 'yaml-mode)
-(package-refresh-contents)
-(package-install 'yaml-mode))
-
-(add-to-list 'org-src-lang-modes '("yaml" . yaml))
-#+end_SRC elisp
-
-
-
-** Elisp Lint
-#+BEGIN_SRC elisp
-(use-package elisp-lint)
-#+END_SRC
-
-
-** LATEX
-
-*** LaTeX Configurations
-
-
-*** PDF Tools
-#+BEGIN_SRC elisp
-  (use-package pdf-tools
-    :ensure t
-    :magic ("%PDF" . pdf-view-mode)
-    :config
-    (pdf-tools-install)
-    (setq-default pdf-view-display-size 'fit-page))
-
-#+END_SRC
-
-
-*** AUCTeX
-#+BEGIN_SRC elisp
-  (use-package auctex
-    :ensure t
-    :defer t
-    :hook (LaTeX-mode . (lambda ()
-                          (push (list 'output-pdf "Zathura")
-                                TeX-view-program-selection)))
-          (LaTeX-mode . turn-on-prettify-symbols-mode))
-
-  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-        TeX-source-correlate-start-server t)
-
-  (add-hook 'TeX-after-compilation-finished-functions
-            #'TeX-revert-document-buffer)
-
-  (put 'LaTeX-narrow-to-environment 'disabled nil)
-
-  (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
-
-  ;; (use-package helm-bibtex
-  ;; :ensure t
-  ;; :bind ("C-c b" . helm-bibtex)
-  ;; :config
-  ;; (setq bibtex-completion-bibliography '("/path/to/your/bibfile.bib")))
-(use-package latex-extra
-  :ensure t
-  :hook (LaTeX-mode . latex-extra-mode))
-
-
-#+END_SRC
-
-
-
-*** CDLaTeX
-#+BEGIN_SRC elisp
-(use-package cdlatex
-  :hook (LaTeX-mode . cdlatex-mode)
-  :config
-  (cdlatex-mode 1))
-#+END_SRC
-
-
-*** Company Math
-#+BEGIN_SRC elisp
-(use-package company-math)
-
-(use-package company-auctex
-:ensure t
-:init
-(company-auctex-init))
-
-(use-package latex-preview-pane
-  :ensure t)
-
-(use-package magic-latex-buffer
-  :ensure t
-  :hook (TeX-update-style . magic-latex-buffer))
-
-    ;; :hook (LaTeX-mode . company-math)
-#+END_SRC
-
-
-*** LaTeX Auto-Activation Snippets (laas)
-#+BEGIN_SRC elisp
-(use-package laas
-  :hook (LaTeX-mode . lass-mode))
-#+END_SRC
-
-
-*** TeX-fold-mode and Other Hooks
-#+BEGIN_SRC elisp
-(add-hook 'TeX-mode-hook #'TeX-fold-mode)
-(add-hook 'TeX-language-dk-hook
-          (lambda () (ispell-change-dictionary "english")))
-
-;; Enable parse on load and save.
-(setq TeX-parse-self t)
-(setq TeX-auto-save t)
-
-(add-hook 'TeX-mode-hook 'flyspell-mode)
-(add-hook 'TeX-mode-hook
-          (lambda () (TeX-fold-mode 1)))
-(add-hook 'TeX-mode-hook 'LaTeX-math-mode)
-(add-hook 'TeX-mode-hook 'turn-on-reftex)
-#+END_SRC
-
-
-* Modes and Extensions
-
-** Minions
-#+BEGIN_SRC elisp
-(use-package minions
-  :custom
-  (minions-mode 1))
-#+END_SRC
-
-** CSV Mode
-#+BEGIN_SRC elisp
-(use-package csv-mode
-  :mode "\\.csv\\'"
-  :preface
-  (defun csv-remove-commas ()
-    (interactive)
-    (goto-char (point-min))
-    (while (re-search-forward "\"\\([^\"]+\\)\"" nil t)
-      (replace-match (replace-regexp-in-string "," "" (match-string 1))))))
-#+END_SRC
-
-** Markdown Mode
-#+BEGIN_SRC elisp
-(use-package markdown-mode
-  :mode (("\\`README\\.md\\'" . gfm-mode)
-         ("\\.md\\'"          . markdown-mode)
-         ("\\.markdown\\'"    . markdown-mode))
-  :custom
-  (markdown-command "pandoc -f markdown_github+smart")
-  (markdown-command-needs-filename t)
-  (markdown-enable-math t)
-  (markdown-open-command "marked")
-  :custom-face
-  (markdown-header-face-1 ((t (:inherit markdown-header-face :height 2.0))))
-  (markdown-header-face-2 ((t (:inherit markdown-header-face :height 1.6))))
-  (markdown-header-face-3 ((t (:inherit markdown-header-face :height 1.4))))
-  (markdown-header-face-4 ((t (:inherit markdown-header-face :height 1.2))))
-  :init
-  (setq markdown-command "multimarkdown"))
-#+END_SRC
-
-** Markdown Preview Mode
-#+BEGIN_SRC elisp
-(use-package markdown-preview-mode
-  :after markdown-mode
-  :config
-  (setq markdown-preview-stylesheets
-        (list (concat "https://github.com/dmarcotte/github-markdown-preview/"
-                      "blob/master/data/css/github.css"))))
-#+END_SRC
-
-
-** Focus
-#+BEGIN_SRC elisp
-(use-package focus)
-#+END_SRC
-
-** Emojify
-#+BEGIN_SRC elisp
-(use-package emojify
-  :after erc
-  :config
-  (global-emojify-mode))
-#+END_SRC
-
-
-
-
-* Terminal Configuration
-
-** Term
-#+BEGIN_SRC elisp
-(use-package term
-  :defer t
-  :config
-  (setq explicit-shell-file-name "bash")
-  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
-#+END_SRC
-
-** Vterm
-#+BEGIN_SRC elisp
-(use-package vterm
-  :defer t
-  :config
-  (setq explicit-shell-file-name "bash")
-  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
-#+END_SRC
-
-** Terminal Modes Line Numbers Configuration
-#+BEGIN_SRC elisp
-(dolist (mode '(term-mode-hook
-                shell-mode-hook
-                eshell-mode-hook
-                vterm-mode-hook
-                pdf-view-mode-hook
-                treemacs-mode-hook))
-  (add-hook mode (lambda ()
-                   (display-line-numbers-mode -1))))
-#+END_SRC
-
-
-* No Littering
-
-#+BEGIN_SRC elisp
-
-    (setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
-
-;;    (setq make-backup-files nil)
-
-    (make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
-
-    (setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
-          auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
-
-  (setq create-lockfiles nil)
-
-  (setq projectile-known-projects-file
-        (expand-file-name "tmp/projectile-bookmarks.eld" user-emacs-directory)
-        lsp-session-file (expand-file-name "tmp/.lsp-session-v1" user-emacs-directory))
-
-
-(setq user-emacs-directory (expand-file-name "~/.cache/emacs"))
-
-(use-package no-littering)
-
-
-#+END_SRC
-
-
-* TESTING
-
-#+BEGIN_SRC elisp
-(defun org-hide-src-block-delimiters()
-    (interactive)
-    (save-excursion (goto-char (point-max))
-        (while (re-search-backward "#\\+BEGIN_SRC\\|#\\+END_SRC" nil t)
-           (let ((ov (make-overlay (line-beginning-position)
-               (1+ (line-end-position)))))
-           (overlay-put ov 'invisible t)))))
-
-
-(org-hide-src-block-delimiters)
-#+END_SRC
-
-
 * Org Agenda
 
 #+BEGIN_SRC elisp
@@ -1437,6 +1386,7 @@ on your system.
 
   #+END_SRC
 
+*
 #+begin_src emacs-lisp
   (use-package ibuffer
     :ensure nil
@@ -1450,940 +1400,58 @@ on your system.
           (emacs-lock-mode 'kill))))
     :init (my/protected-buffers))
 #+end_src
-#+begin_src emacs-lisp
-  (use-package imenu
-    :ensure nil
-    :preface
-    (defun my/smarter-move-beginning-of-line (arg)
-      (interactive "^p")
-      (setq arg (or arg 1))
-      (when (/= arg 1)
-        (let ((line-move-visual nil))
-          (forward-line (1- arg))))
 
-      (let ((orig-point (point)))
-        (back-to-indentation)
-        (when (= orig-point (point))
-          (move-beginning-of-line 1))))
-    :bind (("C-a" . my/smarter-move-beginning-of-line)
-           ("C-r" . imenu)))
+#+begin_src emacs-lisp
+  (use-package imenu)
+#+end_src
+
+* Languages Server Protocol
+
+** LSP Configuration
+
+#+begin_src elisp
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :hook
+  (lsp-mode . lsp-enable-which-key-integration)
+  :custom
+  (lsp-diagnostics-provider :capf)
+  (lsp-headerline-breadcrumb-enable t)
+  (lsp-headerline-breadcrumb-segments '(project file symbols))
+  (lsp-lens-enable nil)
+  (lsp-disabled-clients '((python-mode . pyls)))
+  :init
+  (setq lsp-keymap-prefix "C-c l")) ;; Or 'C-l', 's-l'
 #+end_src
 
 
-* Dried Mode
-
-
-#+begin_src emacs-lisp
-  (use-package dired
-    :ensure nil
-    :commands (dired dired-jump)
-    :delight "Dired"
-    :custom
-    (dired-auto-revert-buffer t)
-    (dired-dwim-target t)
-    (dired-hide-details-hide-symlink-targets nil)
-    (dired-listing-switches "-alh --group-directories-first")
-    (dired-ls-F-marks-symlinks nil)
-    (dired-recursive-copies 'always))
+** LSP Ivy Integration
+#+begin_src elisp
+(use-package lsp-ivy
+  :after lsp-mode)
 #+end_src
 
 
-#+begin_src emacs-lisp
-  (use-package dired-single
-    :after dired
-    :bind (:map dired-mode-map
-                ([remap dired-find-file] . dired-single-buffer)
-                ([remap dired-up-directory] . dired-single-up-directory)
-                ("M-DEL" . dired-prev-subdir)))
+** LSP UI Configuration
+#+begin_src elisp
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :after lsp-mode
+  :custom
+  (lsp-ui-doc-show-with-cursor nil)
+  :config
+  (setq lsp-ui-doc-position 'bottom))
 #+end_src
 
 
-#+begin_src emacs-lisp
-  (use-package dired-open
-    :after (dired dired-jump)
-    :custom (dired-open-extensions '(("mp4" . "mpv"))))
-
-  (use-package all-the-icons-dired
-    :if (display-graphic-p)
-    :hook (dired-mode . all-the-icons-dired-mode))
-
-  (use-package dired-hide-dotfiles
-    :hook (dired-mode . dired-hide-dotfiles-mode)
-    :bind (:map dired-mode-map
-                ("H" . dired-hide-dotfiles-mode)))
-
-
-  (use-package dired-subtree
-    :after dired
-    :bind (:map dired-mode-map
-                ("<tab>" . dired-subtree-toggle)))
-
-
-  (use-package dired-narrow
-    :ensure nil
-    :bind (("C-c C-n" . dired-narrow)
-           ("C-c C-f" . dired-narrow-fuzzy)))
-#+end_src
-
-** Windows
-
-Most of the time, I want to split a window and put the focus on it to perform an
-action. By default GNU Emacs does not give the focus to this new window. I have
-no idea why this is not the default behavior, but we can easily set this
-behavior.
-
-#+begin_src emacs-lisp
-  (use-package window
-    :ensure nil
-    :bind (("C-x 2" . vsplit-last-buffer)
-           ("C-x 3" . hsplit-last-buffer)
-           ;; Don't ask before killing a buffer.
-           ([remap kill-buffer] . kill-this-buffer))
-    :preface
-    (defun hsplit-last-buffer ()
-      "Focus to the last created horizontal window."
-      (interactive)
-      (split-window-horizontally)
-      (other-window 1))
-
-    (defun vsplit-last-buffer ()
-      "Focus to the last created vertical window."
-      (interactive)
-      (split-window-vertically)
-      (other-window 1)))
-#+end_src
-
-To maximize concentration, I prefer to only center individual windows and keep a
-default behavior when multiple windows are present. [[https://github.com/anler/centered-window-mode][centered-window]] deals with
-this behavior.
-
-#+begin_src emacs-lisp
-    (use-package centered-window
-      :custom
-      (cwm-centered-window-width 130)
-      (cwm-frame-internal-border 0)
-      (cwm-incremental-padding t)
-      (cwm-incremental-padding-% 2)
-      (cwm-left-fringe-ratio 0)
-      (cwm-use-vertical-padding t)
-      :config (centered-window-mode))
-#+end_src
-
-The way I move between several windows in GNU Emacs is by indicating the number
-of the window I want to move to. Most people use [[https://github.com/abo-abo/ace-window][ace-window]], but I prefer
-[[https://github.com/dimitri/switch-window][switch-window]] which displays the window number while hiding its content. I find
-this behavior more convenient than moving from window to window to get to the
-one we are looking for.
-
-#+begin_src emacs-lisp
-  (use-package switch-window
-    :bind (("C-x o" . switch-window)
-           ("C-x w" . switch-window-then-swap-buffer)))
-#+end_src
-
-There are times when I would like to bring back a windows layout with their
-content. With the =winner-undo= and =winner-redo= commands from the built-in =winner=
-package, I can easily do that.
-
-#+begin_src emacs-lisp
-  (use-package winner
-    :ensure nil
-    :config (winner-mode))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package vertico
-    ;; :straight (:files (:defaults "extensions/*"))
-    :init (vertico-mode)
-    :bind (:map vertico-map
-                ("C-<backspace>" . vertico-directory-up))
-    :custom (vertico-cycle t)
-    :custom-face (vertico-current ((t (:background "#1d1f21")))))
-#+end_src
-
-To enable richer annotations (e.g., summary documentation of the functions and
-variables, as well as having the size and the last consultation of the files)
-for minibuffer completions, [[https://github.com/minad/marginalia/][marginalia]] is awesome.
-
-#+begin_src emacs-lisp
-  (use-package marginalia
-    :after vertico
-    :init (marginalia-mode)
-    :custom
-    (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
-#+end_src
-
-If like me you like to have icons associated with candidates, you can use
-[[https://github.com/iyefrat/all-the-icons-completion][all-the-icons-completion]].
-
-#+begin_src emacs-lisp
-  (use-package all-the-icons-completion
-    :after (marginalia all-the-icons)
-    :hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
-#+end_src
-
-By default, =vertico= sorts the candidates according to their history position,
-then by length and finally by alphabetical. To improves searching across
-completion (e.g., by filter expressions separated by spaces), you should
-use [[https://github.com/oantolin/orderless][orderless]] (or [[https://github.com/raxod502/prescient.el][prescient]]).
-
-#+begin_src emacs-lisp
-  (use-package orderless
-    :custom
-    (completion-category-defaults nil)
-    (completion-category-overrides '((file (styles . (partial-completion)))))
-    (completion-styles '(orderless)))
-#+end_src
-
-There is nothing like a collection of commands to have additional
-completions. [[https://github.com/minad/consult][consult]] provides this collection.
-
-#+begin_src emacs-lisp
-  (use-package consult
-    :after projectile
-    :bind  (;; Related to the control commands.
-            ("<help> a" . consult-apropos)
-            ("C-x b" . consult-buffer)
-            ("C-x M-:" . consult-complex-command)
-            ("C-c k" . consult-kmacro)
-            ;; Related to the navigation.
-            ("M-g a" . consult-org-agenda)
-            ("M-g e" . consult-error)
-            ("M-g g" . consult-goto-line)
-            ("M-g h" . consult-org-heading)
-            ("M-g i" . consult-imenu)
-            ("M-g k" . consult-global-mark)
-            ("M-g l" . consult-line)
-            ("M-g m" . consult-mark)
-            ("M-g o" . consult-outline)
-            ("M-g I" . consult-project-imenu)
-            ;; Related to the search and selection.
-            ("M-s G" . consult-git-grep)
-            ("M-s g" . consult-grep)
-            ("M-s k" . consult-keep-lines)
-            ("M-s l" . consult-locate)
-            ("M-s m" . consult-multi-occur)
-            ("M-s r" . consult-ripgrep)
-            ("M-s u" . consult-focus-lines)
-            ("M-s f" . consult-find))
-    :custom
-    (completion-in-region-function #'consult-completion-in-region)
-    (consult-narrow-key "<")
-    (consult-project-root-function #'projectile-project-root)
-    ;; Provides consistent display for both `consult-register' and the register
-    ;; preview when editing registers.
-    (register-preview-delay 0)
-    (register-preview-function #'consult-register-preview))
-#+end_src
-
-Finally, [[https://github.com/oantolin/embark/][embark]] is great if like me you like to interact directly with your
-files (e.g., for renaming, deleting and copying) through your completion system
-without having to go through =dired=.
-
-#+begin_src emacs-lisp
-  (use-package embark
-    :bind ("C-." . embark-act))
-#+end_src
-
-
-
- * Spelling
-
-No one is immune to spelling mistakes. It is therefore crucial to check our
-spelling when we write documents, reply to an email or perform any other writing
-task. With =abbrev=, =flyspell=, =ispell=, and LanguageTool, you will have the weapons
-to reduce those nasty little spelling and grammar mistakes.
-
-** Abbreviations
-
-According to a list of misspelled words, the =abbrev= built-in package
-automatically corrects these words on the fly.
-
-*NOTE:* to start with a comfortable list, you can save the common misspellings
-from Wikipedia (cf. [[https://www.masteringemacs.org/article/correcting-typos-misspellings-abbrev][Correcting Typos and Misspellings with Abbrev]])
-
-#+begin_src emacs-lisp
-;; (use-package abbrev
-;;   :ensure nil
-;;   :delight
-;;   :hook (text-mode . abbrev-mode)
-;;   :custom (abbrev-file-name (expand-file-name (format "%s/emacs/abbrev_defs" xdg-data)))
-;;   :config
-;;   (if (file-exists-p abbrev-file-name)
-;;       (quietly-read-abbrev-file)))
-#+end_src
-
-** Fly Spell
-
-I use the =flyspell= built-in package to enable spell checking on-the-fly in GNU
-Emacs. A useful =flyspell= command is =flyspell-auto-correct-word= (=M-TAB=) which
-automatically corrects a word according to the best suggestion.
-
-*NOTE:* a call to =flyspell-buffer= could be extremely slow.
-
-#+begin_src emacs-lisp
-  (use-package flyspell
-    :ensure nil
-    :delight
-    :hook ((text-mode . flyspell-mode)
-           (prog-mode . flyspell-prog-mode))
-    :custom
-    ;; Add correction to abbreviation table.
-    (flyspell-abbrev-p t)
-    (flyspell-default-dictionary "en_US")
-    (flyspell-issue-message-flag nil)
-    (flyspell-issue-welcome-flag nil))
-#+end_src
-
-** Spell Checker
-
-To correct spelling mistakes, the =ispell= built-in package use a spell checker
-package (e.g., [[https://github.com/hunspell/hunspell][hunspell]] or [[https://github.com/GNUAspell/aspell][aspell]]). The =aspell= spell checker package would make
-it easier to spot errors in camelCase, which can be handy when
-programming. However, I personally use =hunspell= which only checks the spelling
-of comments in the code and because it is more consistent on fly spells than
-=aspell=.
-
-To use =hunspell= you need to install it with your system package manager, as well
-as install the desired language dictionaries (e.g., =hunspell-en_US= and
-=hunspell-fr=).
-
-Finally, you can check that you have installed the language dictionaries by
-using the =hunspell -D= command.
-
-#+begin_src emacs-lisp
-  (use-package ispell
-    :preface
-    (defun my/switch-language ()
-      "Switch between the English and French for ispell, flyspell, and LanguageTool."
-      (interactive)
-      (let* ((current-dictionary ispell-current-dictionary)
-             (new-dictionary (if (string= current-dictionary "en_US") "fr_BE" "en_US")))
-        (ispell-change-dictionary new-dictionary)
-        (if (string= new-dictionary "fr_BE")
-            (progn
-              (setq lsp-ltex-language "fr"))
-          (progn
-            (setq lsp-ltex-language "en-US")))
-        (flyspell-buffer)
-        (message "[✓] Dictionary switched to %s" new-dictionary)))
-    :custom
-    (ispell-hunspell-dict-paths-alist
-     '(("en_US" "/usr/share/hunspell/en_US.aff")
-       ("fr_BE" "/usr/share/hunspell/fr_BE.aff")))
-    ;; Save words in the personal dictionary without asking.
-    (ispell-silently-savep t)
-    :config
-    (setenv "LANG" "en_US")
-    (cond ((executable-find "hunspell")
-           (setq ispell-program-name "hunspell")
-           (setq ispell-local-dictionary-alist '(("en_US"
-                                                  "[[:alpha:]]"
-                                                  "[^[:alpha:]]"
-                                                  "['’-]"
-                                                  t
-                                                  ("-d" "en_US" )
-                                                  nil
-                                                  utf-8)
-                                                 ("fr_BE"
-                                                  "[[:alpha:]ÀÂÇÈÉÊËÎÏÔÙÛÜàâçèéêëîïôùûü]"
-                                                  "[^[:alpha:]ÀÂÇÈÉÊËÎÏÔÙÛÜàâçèéêëîïôùûü]"
-                                                  "['’-]"
-                                                  t
-                                                  ("-d" "fr_BE")
-                                                  nil
-                                                  utf-8))))
-          ((executable-find "aspell")
-           (setq ispell-program-name "aspell")
-           (setq ispell-extra-args '("--sug-mode=ultra"))))
-    ;; Ignore file sections for spell checking.
-    (add-to-list 'ispell-skip-region-alist '("#\\+begin_align" . "#\\+end_align"))
-    (add-to-list 'ispell-skip-region-alist '("#\\+begin_align*" . "#\\+end_align*"))
-    (add-to-list 'ispell-skip-region-alist '("#\\+begin_equation" . "#\\+end_equation"))
-    (add-to-list 'ispell-skip-region-alist '("#\\+begin_equation*" . "#\\+end_equation*"))
-    (add-to-list 'ispell-skip-region-alist '("#\\+begin_example" . "#\\+end_example"))
-    (add-to-list 'ispell-skip-region-alist '("#\\+begin_labeling" . "#\\+end_labeling"))
-    (add-to-list 'ispell-skip-region-alist '("#\\+begin_src" . "#\\+end_src"))
-    (add-to-list 'ispell-skip-region-alist '("\\$" . "\\$"))
-    (add-to-list 'ispell-skip-region-alist '(org-property-drawer-re))
-    (add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:")))
-#+end_src
-
-** Grammar Checker
-
-[[https://languagetool.org/][LanguageTool]] is great for correcting your grammar while you are writing or
-saving your buffer. Combined with =abbrev-mode= and =flyspell=, you will have better
-quality documents. To use LanguageTool with LSP mode, the [[https://github.com/emacs-languagetool/lsp-ltex][lsp-ltex]] package is
-what you need. The first time you use it, it will download the [[https://github.com/valentjn/ltex-ls][LTEX Language
-Server]] LSP server for you.
-
-*NOTE:* I don't hook =lsp-ltex= to =text-mode= since it would process the =config.org=
-file which has too many errors to be processed properly.
-
-#+begin_src emacs-lisp
-  (use-package lsp-ltex
-    :disabled
-    :custom
-    (lsp-ltex-enabled nil)
-    (lsp-ltex-mother-tongue "fr"))
-#+end_src
-
-
-* Advanced Configuration
-
-This section contains the configuration of anecdotal GNU Emacs packages.
-
-** Browser
-
-By default GNU Emacs provides the =browse-url= package to open a browser based on
-a query entered via our lovely text editor. Personally, I still prefer to
-directly use my browser, namely [[https://github.com/qutebrowser/qutebrowser][qutebrowser]]. However, nothing prevents us from
-configuring the =browse-url= package.
-
-#+begin_src emacs-lisp
-  (use-package browse-url
-    :ensure nil
-    :custom
-    (browse-url-browser-function 'browse-url-generic)
-    (browse-url-generic-program "qutebrowser"))
-#+end_src
-
-** Calculator
-
-On a daily basis, you may have to make calculations or conversions from one unit
-to another. With the =calc= build-in package (=C-x * c=) it is possible to do this easily
-with GNU Emacs.
-
-Among the useful commands within =calc= that you should know:
-- =calc-algebraic-entry=: allows you to enter a value and its unit to later
-  to convert it or associate it with an operation.
-- =calc-convert-units= (=u c=): converts the output of an algebraic entry (e.g., =25 m= → =25000 mm=).
-- =calc-simplify-units= (=u s=): simplifies the output of an algebraic entry (e.g., =5 m + 23 m= → =5.023 m=).
-- =calc-view-units-table= (=u V=): displays a table of units supported by calc.
-
-#+begin_src emacs-lisp
-  (use-package calc
-    :ensure nil
-    :custom
-    (math-additional-units
-     '((GiB "1024 * MiB" "Giga Byte")
-       (MiB "1024 * KiB" "Mega Byte")
-       (KiB "1024 * B" "Kilo Byte")
-       (B nil "Byte")
-       (Gib "1024 * Mib" "Giga Bit")
-       (Mib "1024 * Kib" "Mega Bit")
-       (Kib "1024 * b" "Kilo Bit")
-       (b "B / 8" "Bit")))
-    ;; Resets the calc's cache.
-    (math-units-table nil))
-#+end_src
-
-** Calendar
-
-It is important to know the vacations and remember some official dates to better
-organize your vacation planning and gift buying. The built-in =calendar= and
-=holidays= packages are there to remind these dates to us.
-
-#+begin_src emacs-lisp
-  (use-package calendar
-    :ensure nil
-    :bind ("C-c 0" . calendar)
-    :custom
-    (calendar-mark-holidays-flag t)
-    (calendar-week-start-day 1))
-#+end_src
-
-By default GNU Emacs fills in too many dates and most of the ones I am
-interested in are not included. Especially those specific to vacations in my
-country. For this reason, I specify to =holidays= to hide some dates and add some
-others.
-
-#+begin_src emacs-lisp
-  (use-package holidays
-    :ensure nil
-    :custom
-    (holiday-bahai-holidays nil)
-    (holiday-hebrew-holidays nil)
-    (holiday-islamic-holidays nil)
-    (holiday-oriental-holidays nil)
-    (holiday-christian-holidays
-     '((holiday-fixed 1 6 "Epiphany")
-       (holiday-fixed 2 2 "Candlemas")
-       (holiday-easter-etc -47 "Mardi Gras")
-       (holiday-easter-etc 0 "Easter Day")
-       (holiday-easter-etc 1 "Easter Monday")
-       (holiday-easter-etc 39 "Ascension")
-       (holiday-easter-etc 49 "Pentecost")
-       (holiday-fixed 8 15 "Assumption")
-       (holiday-fixed 11 1 "All Saints' Day")
-       (holiday-fixed 11 2 "Day of the Dead")
-       (holiday-fixed 11 22 "Saint Cecilia's Day")
-       (holiday-fixed 12 1 "Saint Eloi's Day")
-       (holiday-fixed 12 4 "Saint Barbara")
-       (holiday-fixed 12 6 "Saint Nicholas Day")
-       (holiday-fixed 12 25 "Christmas Day")))
-    (holiday-general-holidays
-     '((holiday-fixed 1 1 "New Year's Day")
-       (holiday-fixed 2 14 "Valentine's Day")
-       (holiday-fixed 3 8 "International Women's Day")
-       (holiday-fixed 10 31 "Halloween")
-       (holiday-fixed 11 11 "Armistice of 1918")))
-    (holiday-local-holidays
-     '((holiday-fixed 5 1 "Labor Day")
-       (holiday-float 3 0 0 "Grandmothers' Day")
-       (holiday-float 4 4 3 "Secretary's Day")
-       (holiday-float 5 0 2 "Mother's Day")
-       (holiday-float 6 0 2 "Father's Day")
-       (holiday-fixed 7 21 "Belgian National Day"))))
-#+end_src
-
-** Color Display in Text
-
-To automatically display a color when typing a color or hex code values, the
-[[https://elpa.gnu.org/packages/rainbow-mode.html][rainbow-mode]] package is useful.
-
-#+begin_src emacs-lisp
-  (use-package rainbow-mode
-    :delight
-    :hook ((prog-mode text-mode) . rainbow-mode))
-#+end_src
-
-** Dashboard
-
-Organization is even more important in the 21st century than it was before. What
-could be better than launching GNU Emacs with a dashboard that lists the tasks
-of the week with =org-agenda= and a list of projects we have recently contributed
-to with =projectile=. To our delight the [[https://github.com/emacs-dashboard/emacs-dashboard][dashboard]] package offers these features
-and more.
-
-#+begin_src emacs-lisp
-  (use-package dashboard
-    :custom
-    (dashboard-banner-logo-title "With Great Power Comes Great Responsibility!")
-    (dashboard-center-content t)
-    (dashboard-items '((agenda)
-                       (projects . 5)))
-    (dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
-    (dashboard-set-file-icons t)
-    (dashboard-set-footer nil)
-    (dashboard-set-heading-icons t)
-    (dashboard-set-navigator t)
-    (dashboard-startup-banner 'logo)
-    :config (dashboard-setup-startup-hook))
-#+end_src
-
-** Displays Available Keybindings in Popup
-
-It is difficult to remember every keyboard shortcuts. The [[https://github.com/justbur/emacs-which-key][which-key]] package
-helps to solve this. I used [[https://github.com/kai2nenobu/guide-key][guide-key]] in my past days, but =which-key= is a good
-replacement.
-
-#+begin_src emacs-lisp
-  (use-package which-key
-    :defer 0.2
-    :delight
-    :custom (which-key-idle-delay 0.5)
-    :config (which-key-mode))
-#+end_src
-
-** Documentation
-
-To have a more user-friendly documentation I use the [[https://github.com/Wilfred/helpful][helpful]] package.
-
-#+begin_src emacs-lisp
-  (use-package helpful
-    :commands (helpful-at-point
-               helpful-callable
-               helpful-command
-               helpful-function
-               helpful-key
-               helpful-macro
-               helpful-variable)
-    :bind
-    ([remap display-local-help] . helpful-at-point)
-    ([remap describe-function] . helpful-callable)
-    ([remap describe-variable] . helpful-variable)
-    ([remap describe-symbol] . helpful-symbol)
-    ([remap describe-key] . helpful-key)
-    ([remap describe-command] . helpful-command))
-#+end_src
-
-** EditorConfig
-
-It often happens that you have to work on the same project as other
-developers. To keep a coding style you can use [[https://editorconfig.org/][EditorConfig]] through the
-[[https://github.com/editorconfig/editorconfig-emacs][editorconfig]] package.
-
-#+begin_src emacs-lisp
-  (use-package editorconfig
-    :defer 0.3
-    :config (editorconfig-mode))
-#+end_src
-
-** History
-
-There are times when it is necessary to remember a command. The =savehist=
-built-in package allows you to save commands in a file so that you can run them
-again later.
-
-#+begin_src emacs-lisp
-;; (use-package savehist
-;;   :ensure nil
-;;   :custom
-;;   (history-delete-duplicates t)
-;;   (history-length 25)
-;;   (savehist-file (expand-file-name (format "%s/emacs/history" xdg-cache)))
-;;   :config (savehist-mode))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package solaire-mode
-    :defer 0.1
-    :custom (solaire-mode-remap-fringe t)
-    :config (solaire-global-mode))
-#+end_src
-
-
-#+begin_src emacs-lisp
-  (use-package highlight-indent-guides
-    :hook (prog-mode . highlight-indent-guides-mode)
-    :custom (highlight-indent-guides-method 'character))
-#+end_src
-
-** Package Menu
-
-The package menu has a simplistic interface. The [[https://github.com/Malabarba/paradox][paradox]] package improves the
-display of this interface, provides different mode line information and other
-features.
-
-#+begin_src emacs-lisp
-  (use-package paradox
-    :defer 1
-    :custom
-    (paradox-column-width-package 25)
-    (paradox-display-star-count nil)
-    (paradox-execute-asynchronously t)
-    (paradox-hide-wiki-packages t)
-    :config (paradox-enable))
-#+end_src
-
-** Parentheses
-
-Managing parentheses can be painful. One of the first things you want to do is
-to change the appearance of the highlight of the parentheses pairs.
-
-#+begin_src emacs-lisp
-  (use-package faces
-    :ensure nil
-    :custom (show-paren-delay 0)
-    :config
-    (set-face-background 'show-paren-match "#161719")
-    (set-face-bold 'show-paren-match t)
-    (set-face-foreground 'show-paren-match "#ffffff"))
-#+end_src
-
-Then, I also like to highlight brackets and other delimiters (e.g., brackets or
-braces) with a different color, depending on their depth. The [[https://github.com/Fanael/rainbow-delimiters][rainbow-delimiters]]
-package allows such behavior.
-
-#+begin_src emacs-lisp
-  (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
-#+end_src
-
-Finally, to manage your parenthesis, I recommend to use [[https://github.com/Fuco1/smartparens][smartparens]] which is in
-my opinion a better alternative to [[https://github.com/emacsmirror/paredit][paredit]] or to the built-in =electric-pair-mode=
-package.
-
-#+begin_src emacs-lisp
-  (use-package smartparens
-    :delight
-    :hook (prog-mode . smartparens-mode)
-    :bind (("M-'" . sp-backward-sexp)
-           ("M-\\" . sp-forward-sexp)
-           ("M-(" . sp-wrap-round)
-           ("M-[" . sp-wrap-curly))
-    :custom (sp-escape-quotes-after-insert nil))
-#+end_src
-
-
-
-** Paste
-
-To get or provide help, it is important to be able to parse a whole buffer or a
-region of this buffer. The [[https://github.com/etu/webpaste.el][webpaste]] package allows you to parse your code using a
-pastebin-like service.
-
-#+begin_src emacs-lisp
-  (use-package webpaste
-    :defer 0.4
-    :bind (("C-c C-p C-b" . webpaste-paste-buffer)
-           ("C-c C-p C-p" . webpaste-paste-buffer-or-region)
-           ("C-c C-p C-r" . webpaste-paste-region))
-    :custom (webpaste-provider-priority '("dpaste.org" "dpaste.com" "ix.io")))
-#+end_src
-
-Similarly, the [[https://github.com/ecraven/imgbb.el][imgbb]] package allows you to select and upload images using the [[https://imgbb.com/][imgbb]] service.
-
-#+begin_src emacs-lisp
-  (use-package imgbb
-    :commands imgbb-upload
-    :bind ("C-c C-p C-i" . imgbb-upload))
-#+end_src
-
-** PDF
-
-By default, opening PDFs under GNU Emacs sucks. Fortunately, the [[https://github.com/vedang/pdf-tools][pdf-tools]]
-package provides =pdf-view= to offer a better support for PDFs.
-
-*NOTE:* If =pdf-tools= fails to open a PDF, please execute the =pdf-tools-install=
-command.
-
-#+begin_src emacs-lisp
-  (use-package pdf-tools
-    :magic ("%PDF" . pdf-view-mode)
-    :init (pdf-tools-install :no-query))
-#+end_src
-
-To be comfortable with PDFs, let's customize [[https://github.com/politza/pdf-tools/blob/master/lisp/pdf-view.el][pdf-view]] which is a major mode part
-of the =pdf-tools= package.
-
-#+begin_src emacs-lisp
-  (use-package pdf-view
-    :ensure nil
-    :after pdf-tools
-    :custom
-    (pdf-view-display-size 'fit-page)
-    (pdf-view-resize-factor 1.1)
-    ;; Avoid searching for unicodes to speed up pdf-tools.
-    (pdf-view-use-unicode-ligther nil)
-    ;; Enable HiDPI support, at the cost of memory.
-    (pdf-view-use-scaling t))
-#+end_src
-
-** Project Interactions
-
-To interact with your projects characterized by a folder with at least one
-special file (e.g., a VCS marker or a project descriptor file like =pom.xml= or
-=Gemfile=), the [[https://github.com/bbatsov/projectile][projectile]] package is a must on GNU Emacs.
-
-#+begin_src emacs-lisp
-  (use-package projectile
-    :diminish (projectile-mode)
-    :custom
-    (projectile-enable-caching t)
-    (projectile-keymap-prefix (kbd "C-c C-p"))
-    (projectile-mode-line '(:eval (projectile-project-name)))
-    ;; Define the folder containing git repositories (e.g., ~/.local/share/git).
-    (projectile-project-search-path '("~/.local/share/git"))
-    (projectile-switch-project-action #'projectile-dired)
-    :config (projectile-global-mode))
-#+end_src
-
-I also use =projectile= with =consult= through the [[https://gitlab.com/OlMon/consult-projectile][counsult-projectile]] package.
-
-#+begin_src emacs-lisp
-  (use-package consult-projectile
-    :after (consult projectile)
-    ;; :straight (consult-projectile :type git :host gitlab :repo
-    ;;                              "OlMon/consult-projectile" :branch "master")
-    :commands (consult-projectile))
-#+end_src
-
-Finally, [[https://github.com/purcell/ibuffer-projectile][ibuffer-projectile]] is helpful to group the buffers in the =ibuffer= list
-by [[#projectile][projectile]] project.
-
-#+begin_src emacs-lisp
-  (use-package ibuffer-projectile
-    :after ibuffer
-    :preface
-    (defun my/ibuffer-projectile ()
-      (ibuffer-projectile-set-filter-groups)
-      (unless (eq ibuffer-sorting-mode 'alphabetic)
-        (ibuffer-do-sort-by-alphabetic)))
-    :hook (ibuffer . my/ibuffer-projectile))
-
-
-  (use-package ivy-yasnippet :after yasnippet)
-  (use-package react-snippets :after yasnippet)
-#+end_src
-
-
-** Spaces Around the Operators
-
-To automatically add spacing around operators as you develop, the
-[[https://github.com/davidshepherd7/electric-operator][electric-operator]] package is there for that.
-
-*NOTE:* I don't use =electric-operator= for C-like languages which works a bit less
-well according to the author of the package.
-
-#+begin_src emacs-lisp
-  (use-package electric-operator
-    :hook ((css-mode java-mode js2-mode
-                    python-mode sql-mode typescript-mode) . electric-operator-mode))
-#+end_src
-
-** Recent Files
-
-It could be useful to have easy access to recently modified files.
-
-#+begin_src emacs-lisp
-;; (use-package recentf
-;;   :ensure nil
-;;   :bind ("C-x C-r" . recentf-open-files)
-;;   :init (recentf-mode)
-;;   :custom
-;;   (recentf-exclude (list "/scp:"
-;;                          "/ssh:"
-;;                          "/sudo:"
-;;                          "/tmp/"
-;;                          "~$"
-;;                          "COMMIT_EDITMSG"))
-;;   (recentf-max-menu-items 15)
-;;   (recentf-max-saved-items 200)
-;;   (recentf-save-file (expand-file-name (format "%s/emacs/recentf" xdg-cache)))
-;;   :config (run-at-time nil (* 5 60) 'recentf-save-list))
-#+end_src
-
-** Term Definitions
-
-Occasionally, I would like to have a summary of a term directly on GNU Emacs,
-before that I would like to know more about this term. The [[https://github.com/jozefg/wiki-summary.el][wiki-summary]] package
-allows this behavior.
-
-#+begin_src emacs-lisp
-  (use-package wiki-summary
-    :commands (wiki-summary wiki-summary-insert)
-    :bind ("C-c W" . wiki-summary)
-    :preface
-    (defun my/format-summary-in-buffer (summary)
-      "Given a summary, sticks it in the *wiki-summary* buffer and displays
-       the buffer."
-      (let ((buf (generate-new-buffer "*wiki-summary*")))
-        (with-current-buffer buf
-          (princ summary buf)
-          (fill-paragraph)
-          (goto-char (point-min))
-          (view-mode))
-        (pop-to-buffer buf)))
-    :config
-    (advice-add 'wiki-summary/format-summary-in-buffer
-                :override #'my/format-summary-in-buffer))
-#+end_src
-** Try Packages
-
-It happens that I want to try a GNU Emacs package without installing it. The [[https://github.com/larstvei/Try][try]]
-package allows this behavior.
-
-#+begin_src emacs-lisp
-  (use-package try :commands try)
-#+end_src
-
-** Version Control System
-
-It is quite common to work on [[https://git-scm.com/][Git]] repositories, therefore it is important to
-have a configuration that suits us. To interact with Git, GNU Emacs has [[https://github.com/magit/magit][magit]]
-which is the best tool I have tested. With =magit= you can directly interact with
-your repositories through an interface.
-
-#+begin_src emacs-lisp
-  (use-package magit
-    :commands magit-status
-    :custom
-    (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-#+end_src
-
-To make sure that the summary and the body of the commits respect the
-conventions, the [[https://github.com/magit/magit/blob/master/lisp/git-commit.el][git-commit]] package from =magit= is perfect.
-
-#+begin_src emacs-lisp
-  (use-package git-commit
-    :ensure nil
-    :preface
-    (defun my/git-commit-auto-fill-everywhere ()
-      "Ensure that the commit body does not exceed 72 characters."
-      (setq fill-column 72)
-      (setq-local comment-auto-fill-only-comments nil))
-    :hook (git-commit-mode . my/git-commit-auto-fill-everywhere)
-    :custom (git-commit-summary-max-length 50))
-#+end_src
-
-To manage [[https://www.gnu.org/software/diffutils/manual/html_node/diff3-Options.html][diff3]] conflicts with Git, the smerge-mode builtin package is helpful.
-
-#+begin_src emacs-lisp
-  (use-package smerge-mode
-    :after hydra
-    :delight " ∓"
-    :commands smerge-mode
-    :bind (:map smerge-mode-map
-                ("M-g n" . smerge-next)
-                ("M-g p" . smerge-prev))
-    :hook (magit-diff-visit-file . hydra-merge/body))
-#+end_src
-
-Finally, I like to know the modified lines of a file while I edit it.
-
-#+begin_src emacs-lisp
-  (use-package git-gutter
-    :defer 0.3
-    :delight
-    :config (global-git-gutter-mode))
-#+end_src
-
-** Whitespaces and Kill
-
-It is annoying to see useless blank spaces at the end of a line or a file. Let's
-get rid of these spaces. Most of the time, I also like to have justified texts.
-
-#+begin_src emacs-lisp
-  (use-package simple
-    :ensure nil
-    :delight (auto-fill-function)
-    :preface
-    (defun my/kill-region-or-line ()
-      "When called interactively with no active region, kill the whole line."
-      (interactive)
-      (if current-prefix-arg
-          (progn
-            (kill-new (buffer-string))
-            (delete-region (point-min) (point-max)))
-        (progn (if (use-region-p)
-                   (kill-region (region-beginning) (region-end) t)
-                 (kill-region (line-beginning-position) (line-beginning-position
-                                                         2))))))
-    :hook ((before-save . delete-trailing-whitespace)
-           ((prog-mode text-mode) . turn-on-auto-fill))
-    :bind ("C-w" . my/kill-region-or-line)
-    :custom (set-mark-command-repeat-pop t))
-#+end_src
-
-Finally, I also like is to be able to delete every consecutive space characters
-when a space character is deleted. The [[https://github.com/nflath/hungry-delete][hungry-delete]] package allows this
-behavior.
-
-#+begin_src emacs-lisp
-  (use-package hungry-delete
-    :defer 0.7
-    :delight
-    :config (global-hungry-delete-mode))
+** LSP Treemacs Integration
+#+begin_src elisp
+(use-package lsp-treemacs
+  :after (lsp-mode treemacs))
 #+end_src
 
 * Prog languages
-
-
-Section dedicated to the definition and customization of different programming
-languages and their tools. If you have the need to specify other programming
-languages, please check out the [[https://emacs-lsp.github.io/lsp-mode/page/languages/][languages section]] of the LSP mode website.
-
 ** Bash
-
-Being a UNIX user, I often do Bash. Since GNU Emacs already supports it, I only
-use the [[https://emacs-lsp.github.io/lsp-mode/page/lsp-bash/][bash-language-server]] (=bash-ls=) as LSP server. To use it, do not forget
-to configure the LSP package and to install this LSP server through LSP mode or
-with your system package manager.
-
-Finally, the following snippet ensures that execution right (with =chmod +x=) is
-automatically granted to save a shell script file that begins with a =#!= shebang.
 
 #+begin_src emacs-lisp
   (use-package sh-script
@@ -2391,122 +1459,8 @@ automatically granted to save a shell script file that begins with a =#!= sheban
     :hook (after-save . executable-make-buffer-file-executable-if-script-p))
 #+end_src
 
-** C++
-
-When I develop in C++ with GNU Emacs, I use the [[https://github.com/MaskRay/ccls][ccls]] LSP server. To use it, do
-not forget to configure the LSP package and to install this LSP server through
-your system package manager.
-
-#+begin_src emacs-lisp
-  (use-package ccls
-    :after projectile
-    :hook ((c-mode c++-mode objc-mode cuda-mode) . lsp-deferred)
-    :custom
-    (ccls-args nil)
-    (ccls-executable (executable-find "ccls"))
-    (projectile-project-root-files-top-down-recurring
-     (append '("compile_commands.json" ".ccls")
-             projectile-project-root-files-top-down-recurring))
-    :config (add-to-list 'projectile-globally-ignored-directories ".ccls-cache"))
-#+end_src
-
-
-#+begin_src emacs-lisp
-  (use-package google-c-style
-    :hook (((c-mode c++-mode) . google-set-c-style)
-           (c-mode-common . google-make-newline-indent)))
-#+end_src
-
-# ** CMake
-
-# CMake is a cross-platform build system generator. For its support with GNU
-# Emacs, the [[https://github.com/Kitware/CMake/blob/master/Auxiliary/cmake-mode.el][cmake-mode]] package with the installation of the [[https://emacs-lsp.github.io/lsp-mode/page/lsp-cmake/][cmake-language-server]]
-# LSP server is sufficient. To use it, do not forget to configure the LSP package
-# and to install this LSP server through LSP mode or with your system package
-# manager.
-
-#+begin_src emacs-lisp
-  (use-package cmake-mode
-    :hook (cmake-mode . lsp-deferred)
-    :mode ("CMakeLists\\.txt\\'" "\\.cmake\\'"))
-#+end_src
-
-# To better manage syntax colors, especially with respect to function arguments,
-# it is visually useful to install [[https://github.com/Lindydancer/cmake-font-lock][cmake-font-lock]].
-#+begin_src emacs-lisp
-  (use-package cmake-font-lock
-    :hook (cmake-mode . cmake-font-lock-activate))
-#+end_src
-
-# Finally, to compile with CMake in C++, I use [[https://github.com/atilaneves/cmake-ide/blob/master/cmake-ide.el][cmake-ide]], by indicating where the
-# =CMakeLists.txt= file is present in the project.
-
-#+begin_src emacs-lisp
-  (use-package cmake-ide
-    :after projectile
-    :init (cmake-ide-setup)
-    :hook (c++-mode . my/cmake-ide-find-project)
-    :preface
-    (defun my/cmake-ide-find-project ()
-      "Find the directory of the project for cmake-ide."
-      (with-eval-after-load 'projectile
-        (setq cmake-ide-project-dir (projectile-project-root))
-        (setq cmake-ide-build-dir (concat cmake-ide-project-dir "build")))
-      (setq cmake-ide-compile-command
-            (concat "cd " cmake-ide-build-dir " && cmake .. && make"))
-      (cmake-ide-load-db))
-
-    (defun my/switch-to-compilation-window ()
-      "Switch to the *compilation* buffer after compilation."
-      (other-window 1))
-    :bind ([remap comment-region] . cmake-ide-compile)
-    :config (advice-add 'cmake-ide-compile :after #'my/switch-to-compilation-window))
-#+end_src
-
-
-** Dart and Flutter
-
-For the few times I have to develop in Dart, [[https://github.com/bradyt/dart-mode][dart-mode]] with [[https://emacs-lsp.github.io/lsp-dart/][lsp-dart]] as server
-LSP is great! To use it, do not forget to configure the LSP package and to
-install =dart= with your system package manager.
-
-#+begin_src emacs-lisp
-  (use-package dart-mode
-    :after projectile
-    :mode "\\.dart\\'"
-    :config
-    (add-to-list 'projectile-project-root-files-bottom-up "pubspec.yaml")
-    (add-to-list 'projectile-project-root-files-bottom-up "BUILD"))
-#+end_src
-
-To configure =lsp-dart=, nothing difficult. Remember to indicate the path to the
-Dart SDK dir. Finally, if you use Flutter, do not forget to install it too with
-your system package manager.
-
-#+begin_src emacs-lisp
-  (use-package lsp-dart
-    :hook (dart-mode . lsp-deferred)
-    :custom
-    (lsp-dart-dap-flutter-hot-reload-on-save t)
-    (lsp-dart-sdk-dir "/opt/flutter/bin/cache/dart-sdk/"))
-#+end_src
-
-** Dockerfile
-
-I often use Docker with Dockerfile. To support it with LSP and GNU Emacs, the
-package dockerfile-mode with [[dockerfile-language-server-nodejs][dockerfile-language-server-nodejs]] (=dockerfile-ls=)
-as LSP server is enough. To use it, do not forget to configure the LSP package
-and to install this LSP server through LSP mode or with your system package
-manager.
-
-#+begin_src emacs-lisp
-  (use-package dockerfile-mode :delight "δ" :mode "Dockerfile\\'")
-#+end_src
-
 ** EPUB
 
-Sometimes I have to read digital books in EPUB format. The [[https://github.com/wasamasa/nov.el][nov]] package allows to
-open this kind of file.
 
 #+begin_src emacs-lisp
   (use-package nov
@@ -2515,14 +1469,7 @@ open this kind of file.
 #+end_src
 
 
-
-
 ** Gnuplot
-
-Whether professionally or personally, it is often necessary to visualize your
-data in a quality graph. [[http://www.gnuplot.info/][Gnuplot]] is the perfect tool for this and the[[https://github.com/emacsorphanage/gnuplot][ gnuplot]]
-package allows to support this tool with GNU Emacs. To use gnuplot, do not
-forget to install it with your system package manager.
 
 #+begin_src emacs-lisp
   (use-package gnuplot
@@ -2531,135 +1478,239 @@ forget to install it with your system package manager.
                 ("C-c C-c".  gnuplot-send-buffer-to-gnuplot)))
 #+end_src
 
-** INI
-
-To modify the INI files, you need to install the =ini-mode= package.
-
-#+begin_src emacs-lisp
-  (use-package ini-mode :mode "\\.ini\\'")
-#+end_src
-
-** Java
-
-
-#+begin_src emacs-lisp
-  (use-package lsp-java)
-#+end_src
-
-Most of my Java projects are made with =gradle=. From then on, [[https://github.com/jacobono/emacs-gradle-mode][gradle-mode]] with
-the configuration below allows me to compile my Java project with gradle easily.
-
-#+begin_src emacs-lisp
-  (use-package gradle-mode
-    :hook (java-mode . gradle-mode)
-    :preface
-    (defun my/switch-to-compilation-window ()
-      "Switch to the *compilation* buffer after compilation."
-      (other-window 1))
-    :bind (:map gradle-mode-map
-                ("C-c C-c" . gradle-build)
-                ("C-c C-t" . gradle-test))
-    :config
-    (advice-add 'gradle-build :after #'my/switch-to-compilation-window)
-    (advice-add 'gradle-test :after #'my/switch-to-compilation-window))
-#+end_src
-
-** JavaScript
-
-JavaScript is one of those languages that needs a bit of setup time to get some
-stability with GNU Emacs. By default GNU Emacs uses =js-mode= as the major mode
-for JavaScript buffers. However, I prefer to use [[https://github.com/mooz/js2-mode][js2-mode]] which is an enhanced
-version of =js-mode=. This package offers a better syntax highlighting and
-proposes many other features.
-
-As LSP server I use [[https://github.com/typescript-language-server/typescript-language-server][typescript-language-server]] (=ts-ls=) which is the one
-recommended by the LSP mode community. To use the LSP server, do not forget to
-configure the LSP package and to install this LSP server through LSP mode or
-with your system package manager
-
-#+begin_src emacs-lisp
-  (use-package js2-mode
-    :ensure flycheck
-    :mode "\\.js\\'"
-    :hook ((js2-mode . js2-imenu-extras-mode)
-           (js2-mode . prettier-js-mode))
-    :custom (js-indent-level 2)
-    :config (flycheck-add-mode 'javascript-eslint 'js2-mode))
-#+end_src
-
-I like to use [[https://prettier.io/][prettier]] to get my TypeScript code clean. To use it, do not forget
-to install it with your package manager.
-
-#+begin_src emacs-lisp
-  (use-package prettier-js
-    :delight
-    :custom (prettier-js-args '("--print-width" "100"
-                                "--single-quote" "true"
-                                "--trailing-comma" "all")))
-#+end_src
-
-To get additional refactoring functions, I use the [[https://github.com/js-emacs/js2-refactor.el][js2-refactor]] package. This
-package also allows me to use the =js2r-kill= commands which easily delete the
-implementation of a function.
-
-#+begin_src emacs-lisp
-  (use-package js2-refactor
-    :hook (js2-mode . js2-refactor-mode)
-    :bind (:map js2-mode-map
-                ("C-k" . js2r-kill)
-                ("M-." . lsp-find-definition)))
-#+end_src
-
-*NOTE:* I have long used [[https://github.com/js-emacs/xref-js2][xref-js2]] to navigate through definitions and references
-in JavaScript. However, lsp-mode now already provides this functionality for us.
-
-Finally, I sometimes take a look at the generated =yarn.lock= file. To have a nice
-syntax color and avoid modifying it, the [[https://github.com/anachronic/yarn-mode][yarn-mode]] package is perfect.
-
-#+begin_src emacs-lisp
-  (use-package yarn-mode :mode "yarn\\.lock\\'")
-#+end_src
-
 ** JSON
-
-JSON is probably the data format I use the most in the web. That's why its setup
-below is a bit more advanced. As LSP server I prefer
-[[https://emacs-lsp.github.io/lsp-mode/page/lsp-json/][vscode-json-languageserver]]. To use it, make sure you install it with your
-package manager and to configure the LSP package.
 
 #+begin_src emacs-lisp
   (use-package json-mode
     :delight "J"
-    :mode "\\.json\\'"
-    :hook (before-save . my/json-mode-before-save-hook)
-    :preface
-    (defun my/json-mode-before-save-hook ()
-      (when (eq major-mode 'json-mode)
-        (json-pretty-print-buffer)))
+    :mode "\\.json\\'")
 
-    (defun my/json-array-of-numbers-on-one-line (encode array)
-      "Print the arrays of numbers in one line."
-      (let* ((json-encoding-pretty-print
-              (and json-encoding-pretty-print
-                   (not (loop for x across array always (numberp x)))))
-             (json-encoding-separator (if json-encoding-pretty-print "," ", ")))
-        (funcall encode array)))
-    :config (advice-add 'json-encode-array :around #'my/json-array-of-numbers-on-one-line))
 #+end_src
 
-** LaTeX
-
-Being a lover of beautiful writing, it is important for me to have a stable
-LaTeX environment. To have access to this stability, I use the =tex-mode= built-in
-package and [[https://github.com/latex-lsp/texlab][texlab]] as LSP server. To use it, make sure you install it with your
-package manager and to configure the LSP package.
-
-With =tex-mode= we need to ensure to install AUCTeX, which is a built-in package
-for writing and formatting TeX files in GNU Emacs. With =AUCTeX you can for
-example use the =TeX-command-master= (=C-c C-c=) command to compile your TeX files
-and the =LaTeX-environment= (=C-c C-e=) command to insert a LaTeX environment.
+** Lua
 
 #+begin_src emacs-lisp
+      (use-package lua-mode
+        :mode "\\.lua\\'")
+#+end_src
+
+** Markdown Mode
+#+BEGIN_SRC elisp
+(use-package markdown-mode
+  :mode (("\\`README\\.md\\'" . gfm-mode)
+         ("\\.md\\'"          . markdown-mode)
+         ("\\.markdown\\'"    . markdown-mode))
+  :custom
+  (markdown-command "pandoc -f markdown_github+smart")
+  (markdown-command-needs-filename t)
+  (markdown-enable-math t)
+  (markdown-open-command "marked")
+  :custom-face
+  (markdown-header-face-1 ((t (:inherit markdown-header-face :height 2.0))))
+  (markdown-header-face-2 ((t (:inherit markdown-header-face :height 1.6))))
+  (markdown-header-face-3 ((t (:inherit markdown-header-face :height 1.4))))
+  (markdown-header-face-4 ((t (:inherit markdown-header-face :height 1.2))))
+  :init
+  (setq markdown-command "multimarkdown"))
+
+
+
+#+END_SRC
+
+#+begin_src emacs-lisp
+  (use-package markdown-mode
+    :delight "μ"
+    :mode ("\\.\\(md\\|markdown\\)\\'")
+    :custom (markdown-command "/usr/bin/pandoc"))
+
+  (use-package markdown-preview-mode
+    :commands markdown-preview-mode)
+#+end_src
+
+** Python
+
+#+begin_src emacs-lisp
+  (use-package python
+    :ensure flycheck
+    :preface
+    (defun python-remove-unused-imports()
+      (interactive)
+      (if (executable-find "autoflake")
+          (progn
+            (shell-command (format "autoflake --remove-all-unused-imports -i %s"
+                                   (shell-quote-argument (buffer-file-name))))
+            (revert-buffer t t t))
+        (warn "[✗] python-mode: Cannot find autoflake executable.")))
+    :bind (:map python-mode-map
+                ("M-[" . python-nav-backward-block)
+                ("M-]" . python-nav-forward-block)
+                ("M-|" . python-remove-unused-imports))
+    :custom
+    (flycheck-pylintrc "~/.pylintrc")
+    (flycheck-python-pylint-executable "/usr/bin/pylint"))
+#+end_src
+
+#+begin_src elisp
+(use-package lsp-pyright
+  :hook
+  (python-mode . (lambda ()
+                   (require 'lsp-pyright)
+                   (lsp-deferred))))
+  (use-package lsp-pyright
+    :if (executable-find "pyright")
+    ;; To properly load `lsp-pyright', the `require' instruction is important.
+    :hook (python-mode . (lambda ()
+                           (require 'lsp-pyright)
+                           (lsp-deferred)))
+    :custom
+    (lsp-pyright-python-executable-cmd "python3")
+    (lsp-pyright-venv-path "~/.cache/pypoetry/virtualenvs/"))
+#+end_src
+
+
+#+begin_src emacs-lisp
+  (use-package py-isort
+    :hook ((before-save . py-isort-before-save)
+           (python-mode . pyvenv-mode)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package pyvenv
+    :after python
+    :config (pyvenv-tracking-mode))
+
+  (use-package pyenv-mode
+    :hook ((python-mode . pyenv-mode)
+           (projectile-switch-project . projectile-pyenv-mode-set))
+    :custom (pyenv-mode-set "3.8.5")
+    :preface
+    (defun projectile-pyenv-mode-set ()
+      "Set pyenv version matching project name."
+      (let ((project (projectile-project-name)))
+        (if (member project (pyenv-mode-versions))
+            (pyenv-mode-set project)
+          (pyenv-mode-unset)))))
+#+end_src
+
+#+BEGIN_SRC   elisp
+  (use-package python-mode
+    :hook
+    (python-mode . flycheck-mode)
+    (python-mode . company-mode)
+    (python-mode . blacken-mode)
+    (python-mode . yas-minor-mode)
+    :custom
+    (python-shell-interpreter "python3")
+    :config
+    )
+
+  (use-package elpy
+    :ensure t
+    :init
+    (elpy-enable)
+    :config
+    ;; Use IPython for REPL
+    (setq elpy-shell-interactive-shell-command "ipython3")
+    (setq elpy-shell-interactive-shell-args '("--simple-prompt" "-i")))
+
+  (use-package pyvenv
+    :defer t
+    :hook (pyvenv-mode . python-mode)
+    :config
+    (pyvenv-mode 1))
+
+
+
+#+END_SRC
+
+** SQL
+
+#+begin_src emacs-lisp
+  (use-package sql-mode
+    :ensure nil
+    :mode "\\.sql\\'")
+
+  (use-package sql-indent
+    :delight sql-mode "Σ"
+    :hook (sql-mode . sqlind-minor-mode))
+
+
+  (setq sql-postgres-login-params
+        '((user :default "postgres")
+          (database :default "analysis")
+          (server :default "localhost")
+          (port :default 5432)))
+
+#+END_SRC
+** HASKELL
+#+BEGIN_SRC   haskell
+  (use-package haskell-mode
+    :defer t)
+    (require 'haskell-mode)
+    (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+    (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+    (setq-default indent-tabs-mode nil)
+#+END_SRC
+
+** Yaml
+#+BEGIN_SRC   elisp
+(use-package  yaml-mode)
+
+  (unless
+          (package-installed-p 'yaml-mode)
+      (package-refresh-contents)
+      (package-install 'yaml-mode))
+      (add-to-list 'org-src-lang-modes '("yaml" . yaml))
+#+end_src
+
+** Elisp Lint
+#+BEGIN_SRC elisp
+(use-package elisp-lint)
+#+END_SRC
+
+
+
+* PDF Tools
+#+BEGIN_SRC elisp
+  (use-package pdf-tools
+    :ensure t
+    :magic ("%PDF" . pdf-view-mode)
+    :config
+    (pdf-tools-install)
+    (setq-default pdf-view-display-size 'fit-page))
+
+  (use-package pdf-view
+    :ensure nil
+    :after pdf-tools
+    :custom
+    (pdf-view-display-size 'fit-page)
+    (pdf-view-resize-factor 1.1)
+    (pdf-view-use-unicode-ligther nil)
+    (pdf-view-use-scaling t))
+#+end_src
+
+* AUCTeX
+#+BEGIN_SRC elisp
+(use-package auctex
+    :ensure t
+    :defer t
+    :hook (LaTeX-mode . (lambda ()
+                          (push (list 'output-pdf "Zathura")
+                                TeX-view-program-selection)))
+          (LaTeX-mode . turn-on-prettify-symbols-mode))
+
+  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+        TeX-source-correlate-start-server t)
+
+  (add-hook 'TeX-after-compilation-finished-functions
+            #'TeX-revert-document-buffer)
+
+  (put 'LaTeX-narrow-to-environment 'disabled nil)
+
+  (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
+
+
+
   (use-package tex
     :ensure auctex
     :preface
@@ -2680,24 +1731,20 @@ and the =LaTeX-environment= (=C-c C-e=) command to insert a LaTeX environment.
     (TeX-parse-self t)
     (TeX-PDF-mode t)
     (TeX-source-correlate-mode t)
-    (TeX-view-program-selection '((output-pdf "PDF Tools")))
     :config
     (advice-add 'TeX-next-error :after #'my/switch-to-help-window)
     (advice-add 'TeX-recenter-output-buffer :after #'my/switch-to-help-window)
-    ;; the ":hook" doesn't work for this one... don't ask me why.
     (add-hook 'TeX-after-compilation-finished-functions 'TeX-revert-document-buffer))
 #+end_src
 
-Also, I like to use a TeX engine that can handle Unicode and use the font of my
-choice.
 
 #+begin_src emacs-lisp
-  (setq-default TeX-engine 'xetex)
+(setq-default TeX-engine 'xetex)
+(use-package latex-extra
+  :ensure t
+  :hook (LaTeX-mode . latex-extra-mode))
 #+end_src
 
-By default, LSP mode uses =lsp-tex= as the LSP client for LaTeX. However, I prefer
-to use [[https://github.com/ROCKTAKEY/lsp-latex][lsp-latex]] which fully supports =texlab=
-(cf. https://github.com/ROCKTAKEY/lsp-latex/issues/26)
 
 #+begin_src emacs-lisp
   (use-package lsp-latex
@@ -2707,10 +1754,54 @@ to use [[https://github.com/ROCKTAKEY/lsp-latex][lsp-latex]] which fully support
                           (require 'lsp-latex)
                           (lsp-deferred)))
     :custom (lsp-latex-build-on-save t))
-#+end_src
+(use-package cdlatex
+  :hook (LaTeX-mode . cdlatex-mode)
+  :config
+  (cdlatex-mode 1))
+#+END_SRC
 
-To easier deal with =\label=, =\ref=, and =\cite= commands in LaTeX, I use the =reftex=
-built-in package.
+
+#+BEGIN_SRC elisp
+(use-package company-math)
+
+(use-package company-auctex
+:ensure t
+:init
+(company-auctex-init))
+
+(use-package latex-preview-pane
+  :ensure t)
+
+(use-package magic-latex-buffer
+  :ensure t
+  :hook (TeX-update-style . magic-latex-buffer))
+
+    ;; :hook (LaTeX-mode . company-math)
+#+END_SRC
+
+
+#+BEGIN_SRC elisp
+(use-package laas
+  :hook (LaTeX-mode . lass-mode))
+#+END_SRC
+
+
+#+BEGIN_SRC elisp
+(add-hook 'TeX-mode-hook #'TeX-fold-mode)
+(add-hook 'TeX-language-dk-hook
+          (lambda () (ispell-change-dictionary "english")))
+
+;; Enable parse on load and save.
+(setq TeX-parse-self t)
+(setq TeX-auto-save t)
+
+(add-hook 'TeX-mode-hook 'flyspell-mode)
+(add-hook 'TeX-mode-hook
+          (lambda () (TeX-fold-mode 1)))
+(add-hook 'TeX-mode-hook 'LaTeX-math-mode)
+(add-hook 'TeX-mode-hook 'turn-on-reftex)
+#+END_SRC
+
 
 #+begin_src emacs-lisp
   (use-package reftex
@@ -2720,8 +1811,6 @@ built-in package.
     (reftex-use-multiple-selection-buffers t))
 #+end_src
 
-Finally, it is often useful to put our hands in a bibliography in LaTeX. The built-in
-package =bibtex= improves the visual and provides several commands.
 
 #+begin_src emacs-lisp
   (use-package bibtex
@@ -2734,315 +1823,32 @@ package =bibtex= improves the visual and provides several commands.
            (bibtex-mode . my/bibtex-fill-column)))
 #+end_src
 
-** Lua
+* Version Control
 
-I rarely program in Lua, but when I do, [[https://github.com/immerrr/lua-mode][lua-mode]] with [[https://emacs-lsp.github.io/lsp-mode/page/lsp-lua-language-server/][lua-language-server]] as LSP
-server satisfies me amply. To use it, do not forget to configure the LSP package
-and to install this LSP server through LSP mode or with your system package
-manager.
+#+begin_src elisp
+(use-package magit
+  :commands magit-status
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
-#+begin_src emacs-lisp
-  (use-package lua-mode :delight "Λ" :mode "\\.lua\\'")
-#+end_src
+(use-package forge)
 
-** Markdown
-
-To edit my files in Markdown, I use [[https://github.com/jrblevin/markdown-mode][markdown-mode]] with [[https://emacs-lsp.github.io/lsp-mode/page/lsp-markdown/][unified-language-server]]
-as LSP server. To use it, do not forget to configure the LSP package and to
-install this LSP server with your system package manager. Added to that, to
-convert Markdown files, you can also install [[https://github.com/jgm/pandoc][pandoc]] with your package manager
-system.
-
-#+begin_src emacs-lisp
-  (use-package markdown-mode
-    :delight "μ"
-    :mode ("\\.\\(md\\|markdown\\)\\'")
-    :custom (markdown-command "/usr/bin/pandoc"))
-#+end_src
-
-Finally, it is always good to have a preview of the Markdown rendering. The
-[[https://github.com/ancane/markdown-preview-mode][markdown-preview-mode]] package allows this.
-
-#+begin_src emacs-lisp
-  (use-package markdown-preview-mode
-    :commands markdown-preview-mode
-    :custom
-    (markdown-preview-javascript
-     (list (concat "https://github.com/highlightjs/highlight.js/"
-                   "9.15.6/highlight.min.js")
-           "<script>
-              $(document).on('mdContentChange', function() {
-                $('pre code').each(function(i, block)  {
-                  hljs.highlightBlock(block);
-                });
-              });
-            </script>"))
-    (markdown-preview-stylesheets
-     (list (concat "https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/"
-                   "3.0.1/github-markdown.min.css")
-           (concat "https://github.com/highlightjs/highlight.js/"
-                   "9.15.6/styles/github.min.css")
-
-           "<style>
-              .markdown-body {
-                box-sizing: border-box;
-                min-width: 200px;
-                max-width: 980px;
-                margin: 0 auto;
-                padding: 45px;
-              }
-
-              @media (max-width: 767px) { .markdown-body { padding: 15px; } }
-            </style>")))
-#+end_src
-
-** PHP and HTML
-
-I hope to never develop in PHP again. The few times I had to do it, I use mainly
-use [[https://github.com/fxbois/web-mode][web-mode]] with [[https://github.com/bmewburn/vscode-intelephense][intelephense]] (=iph=) as LSP server for PHP and
-[[https://emacs-lsp.github.io/lsp-mode/page/lsp-html/][vscode-html-languageserver]] (=html-ls=) as LSP server for HTML. To use them, do not
-forget to configure the LSP package and to install these LSP servers through LSP
-mode or with your system package manager.
-
-*NOTE:* to deal with HTML, I rarely use =html-mode= which does not handle HTML well
-in the presence of CSS and JavaScript.
-
-#+begin_src emacs-lisp
-  (use-package web-mode
-    :delight "☸"
-    :preface
-    (defun enable-minor-mode (my-pair)
-      "Enable minor mode if filename match the regexp."
-      (if (buffer-file-name)
-          (if (string-match (car my-pair) buffer-file-name)
-              (funcall (cdr my-pair)))))
-    :mode ("\\.\\(html\\|jsx\\|php\\)\\'" . web-mode)
-    :hook (web-mode . (lambda ()
-                        (enable-minor-mode
-                         '("\\.jsx?\\'" . prettier-js-mode))))
-    :custom
-    (web-mode-attr-indent-offset 2)
-    (web-mode-block-padding 2)
-    (web-mode-css-indent-offset 2)
-    (web-mode-code-indent-offset 2)
-    (web-mode-comment-style 2)
-    (web-mode-enable-current-element-highlight t)
-    (web-mode-markup-indent-offset 2))
-#+end_src
-
-** PlantUML
-
-To make my UML diagrams with [[https://plantuml.com/][PlantUML]], I use [[https://github.com/skuro/plantuml-mode][plantuml-mode]]. Make sure you
-[[https://plantuml.com/download][download the PlantUML compiled JAR]] and to indicate the path (e.g.,
-=~/.local/lib/plantuml.jar=) of this JAR file with the =plantuml-jar-path= variable.
-
-#+begin_src emacs-lisp
-  (use-package plantuml-mode
-    :mode ("\\.\\(plantuml\\|puml\\)\\'"))
-#+end_src
-
-** Python
-
-Python with GNU Emacs is one of the best supported languages. By using
-=python-mode= and [[https://github.com/microsoft/pyright][pyright]] as LSP server, it's fun to develop in Python. With
-=python-mode= I like to add some bindings to speed up the code code navigation in
-Python. Besides that, I use [[https://github.com/myint/autoflake][autoflake]] to remove unused imports and variables.
-
-#+begin_src emacs-lisp
-  (use-package python
-    :ensure flycheck
-    :delight "π"
-    :preface
-    (defun python-remove-unused-imports()
-      "Remove unused imports and unused variables with autoflake."
-      (interactive)
-      (if (executable-find "autoflake")
-          (progn
-            (shell-command (format "autoflake --remove-all-unused-imports -i %s"
-                                   (shell-quote-argument (buffer-file-name))))
-            (revert-buffer t t t))
-        (warn "[✗] python-mode: Cannot find autoflake executable.")))
-    :bind (:map python-mode-map
-                ("M-[" . python-nav-backward-block)
-                ("M-]" . python-nav-forward-block)
-                ("M-|" . python-remove-unused-imports))
-    :custom
-    (flycheck-pylintrc "~/.pylintrc")
-    (flycheck-python-pylint-executable "/usr/bin/pylint"))
-#+end_src
-
-I have tried several LSP servers. I have experienced that =mspyls= is faster than
-=pylsp=, but =mspyls= has a memory leakage and became depreciated in favor of
-=pyright=. To configure pyright with GNU Emacs, the [[https://github.com/emacs-lsp/lsp-pyright][lsp-pyright]] package is
-enough.
-
-#+begin_src emacs-lisp
-  (use-package lsp-pyright
-    :if (executable-find "pyright")
-    ;; To properly load `lsp-pyright', the `require' instruction is important.
-    :hook (python-mode . (lambda ()
-                           (require 'lsp-pyright)
-                           (lsp-deferred)))
-    :custom
-    (lsp-pyright-python-executable-cmd "python3")
-    (lsp-pyright-venv-path "~/.cache/pypoetry/virtualenvs/"))
-#+end_src
-
-To make sure my Python code is well formatted, I use [[https://github.com/psf/black][black]]. Feel free to install
-it in your virtual environment or directly on your system.
-
-#+begin_src emacs-lisp
-  (use-package blacken
+  (use-package git-gutter
+    :defer 0.3
     :delight
-    :hook (python-mode . blacken-mode)
-    :custom (blacken-line-length 79))
+    :config (global-git-gutter-mode))
 #+end_src
 
-To sort my Python imports, [[https://github.com/paetzke/py-isort.el][py-isort]] does a good job. Also, do not forget to
-install in your virtual environment or directly on your system.
+* TESTING
 
-#+begin_src emacs-lisp
-  (use-package py-isort
-    :hook ((before-save . py-isort-before-save)
-           (python-mode . pyvenv-mode)))
-#+end_src
+#+BEGIN_SRC elisp
+(defun org-hide-src-block-delimiters()
+    (interactive)
+    (save-excursion (goto-char (point-max))
+        (while (re-search-backward "#\\+BEGIN_SRC\\|#\\+END_SRC" nil t)
+           (let ((ov (make-overlay (line-beginning-position)
+               (1+ (line-end-position)))))
+           (overlay-put ov 'invisible t)))))
 
-I use a single virtual environment for all my Python projects. The combination
-of [[https://docs.python.org/3/library/venv.html][venv]] with [[https://github.com/jorgenschaefer/pyvenv][pyvenv]] does the job well. When I encounter a Python buffer, my
-virtual environment activates and stays activated even after I finish working in
-Python. A better behavior would be to define a function through a
-=kill-buffer-hook= that would call the =pyvenv-deactivate= command when all Python
-buffers are closed.
-
-#+begin_src emacs-lisp
-  (use-package pyvenv
-    :after python
-    :config (pyvenv-tracking-mode))
-#+end_src
-
-Finally, to better manage the different versions of Python through projects, I
-use [[https://github.com/pyenv/pyenv][pyenv]] through [[https://github.com/pythonic-emacs/pyenv-mode][pyenv-mode]]-mode. To use it, make sure you have =pyenv= installed
-on your system.
-
-#+begin_src emacs-lisp
-  (use-package pyenv-mode
-    :hook ((python-mode . pyenv-mode)
-           (projectile-switch-project . projectile-pyenv-mode-set))
-    :custom (pyenv-mode-set "3.8.5")
-    :preface
-    (defun projectile-pyenv-mode-set ()
-      "Set pyenv version matching project name."
-      (let ((project (projectile-project-name)))
-        (if (member project (pyenv-mode-versions))
-            (pyenv-mode-set project)
-          (pyenv-mode-unset)))))
-#+end_src
-
-** SQL
-
-For handling SQL files, the =sql-mode= built-in package of GNU Emacs with the [[https://emacs-lsp.github.io/lsp-mode/page/lsp-sqls/][sqls]]
-LSP server does the job.
-
-#+begin_src emacs-lisp
-  (use-package sql-mode
-    :ensure nil
-    :mode "\\.sql\\'")
-#+end_src
-
-Finally, I use [[https://github.com/alex-hhh/emacs-sql-indent][sql-indent]] to better manage the indentations of my SQL queries.
-
-#+begin_src emacs-lisp
-  (use-package sql-indent
-    :delight sql-mode "Σ"
-    :hook (sql-mode . sqlind-minor-mode))
-#+end_src
-
-** Style Sheet
-
-GNU Emacs already has built-in packages for style sheet languages (e.g., CSS,
-LESS, and SCSS). Therefore, installing an appropriate LSP server and making sure
-that the variables are properly indented is more than enough. For the LSP
-server, I use [[https://github.com/vscode-langservers/vscode-css-languageserver][vscode-css-languageserver]] (=css-ls=) although it does not support
-the LESS language. To use it, do not forget to configure the LSP package and to
-install this LSP server through LSP mode or with your system package manager.
-
-#+begin_src emacs-lisp
-  (use-package css-mode
-    :ensure flycheck
-    :mode "\\.css\\'"
-    :custom (css-indent-offset 2)
-    :config (flycheck-stylelintrc "~/.stylelintrc.json"))
-#+end_src
-
-** TypeScript
-
-For my TypeScript adventures, the [[http://github.com/ananthakumaran/typescript.el][typescript-mode]] package and the
-[[https://github.com/typescript-language-server/typescript-language-server][typescript-language-server]] (=ts-ls=) LSP server are more than enough. To use the
-LSP server, do not forget to configure the LSP package and to install this LSP
-server through LSP mode or with your system package manager if it is not already
-done.
-
-Finally, I also use =prettier-js= to ensure proper indentation of my code. To
-enable it, you must install the =prettier= package with your package manager
-system. Concerning the configuration of prettier, this is done in the JavaScript
-section.
-
-#+begin_src emacs-lisp
-  (use-package typescript-mode
-    :ensure flycheck
-    :hook ((typescript-mode . prettier-js-mode)
-           (typescript-mode . lsp-deferred))
-    :mode ("\\.\\(ts\\|tsx\\)\\'")
-    :custom
-    ;; TSLint is depreciated in favor of ESLint.
-    (flycheck-disable-checker 'typescript-tslint)
-    (lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file" "/dev/stderr"))
-    (typescript-indent-level 2)
-    :config
-    (flycheck-add-mode 'javascript-eslint 'typescript-mode))
-#+end_src
-
-** Vue.js
-
-God keep me away from [[https://vuejs.org/][Vue.js]]. The few times I had to develop with it, I pulled
-my hair out. For its support, I managed to get some semblance of stability with
-the [[https://github.com/AdamNiederer/vue-mode][vue-mode]] package and the [[https://github.com/vuejs/vetur/tree/master/server][vue-language-server]] (=vls=) LSP. However, the CSS
-support with =vue-mode= is not great. To use the LSP server, do not forget to
-configure the LSP package and to install this LSP server through LSP mode or
-with your system package manager.
-
-#+begin_src emacs-lisp
-  (use-package vue-mode
-    :delight "V"
-    :hook (vue-mode . lsp-deferred)
-    :mode "\\.vue\\'"
-    :custom (vue-html-extra-indent 2))
-#+end_src
-
-** XML
-
-To manage XML related files the =nxml-mode= package built into GNU Emacs and the
-[[https://emacs-lsp.github.io/lsp-mode/page/lsp-xml/][LemMinX]] (=xmlls=) LSP server does the job. To use it, do not forget to configure
-the LSP package and to install this LSP server through LSP mode or with your
-system package manager.
-
-#+begin_src emacs-lisp
-  (use-package nxml-mode
-    :ensure nil
-    :hook (nxml-mode . lsp-deferred)
-    :mode ("\\.\\(xml\\|xsd\\|wsdl\\)\\'"))
-#+end_src
-
-** YAML
-
-When I have to develop through YAML files, the [[https://github.com/yoshiki/yaml-mode][yaml-mode]] package with the
-[[https://emacs-lsp.github.io/lsp-mode/page/lsp-yaml/][yaml-language-server]] LSP server meets my needs. To use it, do not forget to
-configure the LSP package and to install this LSP server through LSP mode or
-with your system package manager.
-
-#+begin_src emacs-lisp
-  (use-package yaml-mode
-    :delight "ψ"
-    :hook (yaml-mode . lsp-deferred)
-    :mode ("\\.\\(yaml\\|yml\\)\\'"))
-#+end_src
+(org-hide-src-block-delimiters)
+#+END_SRC
