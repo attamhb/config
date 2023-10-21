@@ -1,5 +1,5 @@
 #+TITLE: Xmonad Config
-#+PROPERTY: header-args :tangle ~/.xmonad/xmonad.hs  
+#+PROPERTY: header-args :tangle ~/.xmonad/xmonad.hs
 #+STARTUP: showeverything
 #+AUTHOR: ATTA
 
@@ -17,7 +17,7 @@ import qualified Data.Map        as M
 import XMonad.Layout.Reflect (reflectHoriz)
 import Control.Monad
 import XMonad.Actions.SpawnOn
-#+END_SRC 
+#+END_SRC
 
 ** New
 
@@ -28,11 +28,11 @@ import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 import XMonad.Util.Run(spawnPipe)
 
-#+END_SRC 
+#+END_SRC
 
 
 * Defaults
-    
+
 #+BEGIN_SRC haskell
 myTerminal      = "alacritty"
 myFocusFollowsMouse :: Bool
@@ -41,22 +41,23 @@ myClickJustFocuses :: Bool
 myClickJustFocuses = False
 myBorderWidth   = 1
 myModMask       = mod4Mask
-myWorkspaces    = ["1","2","3","4","5","6","7","8","9", "10"]
+--myWorkspaces    = ["1","2","3","4","5","6","7","8","9", "10"]
+myWorkspaces    = ["1","2","3","4","5"]
 myNormalBorderColor  = "#8f8b7f" --"#42f5e6"
-myFocusedBorderColor = "#712a91" -- "#ff0000" 
+myFocusedBorderColor = "#712a91" -- "#ff0000"
     ------------------------------------------------------------------------
-#+END_SRC 
+#+END_SRC
 
 
 
 * myKeys
-    
+
 #+BEGIN_SRC haskell
   myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
       [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
       , ((modm,               xK_p     ), spawn "dmenu_run")
       , ((modm .|. shiftMask, xK_p     ), spawn "j4-dmenu-desktop")
-  -------------------------------------------------------------------- 
+  --------------------------------------------------------------------
       , ((modm .|. shiftMask, xK_h     ), spawn "alacritty")
       , ((modm .|. shiftMask, xK_x     ), spawn "lxappearance")
       , ((modm .|. shiftMask, xK_v     ), spawn "thunderbird")
@@ -126,11 +127,11 @@ myFocusedBorderColor = "#712a91" -- "#ff0000"
           , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
 
-#+END_SRC 
+#+END_SRC
 
 
 * myMouseBindings
-    
+
 #+BEGIN_SRC haskell
 -- Mouse bindings: default actions bound to mouse events
 myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
@@ -149,7 +150,7 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
     -- you may also bind events to the mouse scroll wheel (button4 and button5)
     ]
 
-#+END_SRC 
+#+END_SRC
 
 
 * myLayout
@@ -185,15 +186,15 @@ myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
 -- To match on the WM_NAME, you can use 'title' in the same way that
 -- 'className' and 'resource' are used below.
 --
-#+END_SRC 
+#+END_SRC
 
 
-* myManageHook 
-    
+* myManageHook
+
 #+BEGIN_SRC haskell
 myManageHook = composeAll
     [ className =? "MPlayer"        --> doFloat
-    , className =? "alacritty"      --> doShift "4:TERMUX" 
+    , className =? "alacritty"      --> doShift "4:TERMUX"
     , className =? "Gimp"           --> doFloat
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore ]
@@ -207,11 +208,11 @@ myManageHook = composeAll
 -- return (All True) if the default handler is to be run afterwards. To
 -- combine event hooks use mappend or mconcat from Data.Monoid.
 --
-#+END_SRC 
+#+END_SRC
 
 
-* myEventHook 
-    
+* myEventHook
+
 #+BEGIN_SRC haskell
 myEventHook = mempty
 
@@ -233,11 +234,11 @@ myMonitor = "xrandr --output HDMI-A-0 --mode 2560x1440 --pos 2560x0 --rotate nor
 --
 -- By default, do nothing.
 -- myStartupHook = return ()
-#+END_SRC 
+#+END_SRC
 
 
 * myStartupHook
-    
+
 #+BEGIN_SRC haskell
 myStartupHook = do
            spawnOnce "picom &"
@@ -249,11 +250,11 @@ myStartupHook = do
            spawnOnce "nm-applet &"
            spawnOnce "volumeicon &"
            spawnOnce "dropbox start &"
-#+END_SRC 
+#+END_SRC
 
 
-* main 
-    
+* main
+
 #+BEGIN_SRC haskell
 -- Now run xmonad with all the defaults we set up.
 
@@ -266,11 +267,11 @@ main = do
   xmproc <- spawnPipe "xmobar -x 1 ~/.xmonad/xmobarrc"
   xmonad $ docks defaults
 
-#+END_SRC 
+#+END_SRC
 
 
-* Default Definitions 
-    
+* Default Definitions
+
 #+BEGIN_SRC haskell
 defaults = def {
       -- simple stuff
@@ -295,11 +296,11 @@ defaults = def {
         startupHook        = myStartupHook
     }
 -------------------------------------------------------------------------------
-#+END_SRC 
+#+END_SRC
 
 
-* Help 
-    
+* Help
+
 #+BEGIN_SRC haskell
 ------------------------------------------------------------------------------
 -- | Finally, a copy of the default bindings in simple textual tabular format.

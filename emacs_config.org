@@ -39,45 +39,46 @@
 #+END_SRC
 
 * Appearance Configuration
+
 ** Text Display and UI Elements Control
 #+BEGIN_SRC elisp
-  (setq inhibit-startup-message t
-        initial-major-mode 'org-mode
-        initial-buffer-choice "~/Dropbox/SCRATCH.org")
+(setq inhibit-startup-message t
+          initial-major-mode 'org-mode
+          initial-buffer-choice "~/Dropbox/SCRATCH.org")
 
-  (set-face-attribute 'default nil
-                      :font "Fira Code Retina"
-                      :height 170)
-  (setq-default fill-column 80)
-  (setq-default line-spacing 2)
-  (global-display-line-numbers-mode t)
-  (setq display-line-numbers-type 'relative)
-  (global-display-fill-column-indicator-mode 0)
-  (line-number-mode 1)
-  (column-number-mode 0)
-  (electric-pair-mode  1)
-  (tooltip-mode 0)
-  (tool-bar-mode 0)
-  (scroll-bar-mode 0)
-  (blink-cursor-mode 0)
-  (setq use-dialog-box nil)
-  (set-fringe-mode 0)
-  (menu-bar-mode 0)
-  (setq use-dialog-box nil)
-  (recentf-mode 1)
+(set-face-attribute 'default nil
+                        :font "Fira Code Retina"
+                        :height 170)
+    (setq-default fill-column 80)
+    (setq-default line-spacing 2)
+    (global-display-line-numbers-mode t)
+    (setq display-line-numbers-type 'relative)
+    (global-display-fill-column-indicator-mode 0)
+    (line-number-mode 1)
+    (column-number-mode 0)
+    (electric-pair-mode  1)
+    (tooltip-mode 0)
+    (tool-bar-mode 0)
+    (scroll-bar-mode 0)
+    (blink-cursor-mode 0)
+    (setq use-dialog-box nil)
+    (set-fringe-mode 0)
+    (menu-bar-mode 0)
+    (setq use-dialog-box nil)
+    (recentf-mode 1)
 
-  (savehist-mode 1)
-  (save-place-mode 1)
-  (setq history-length 25)
-  (global-auto-revert-mode 1)
+    (savehist-mode 1)
+    (save-place-mode 1)
+    (setq history-length 25)
+    (global-auto-revert-mode 1)
 
+    (setq ring-bell-function 'ignore)
+    (setq dired-dwim-target t)
+    (setq delete-by-moving-to-trash t)
+    (put 'dired-find-alternate-file 'disabled nil)
+    (setq dired-listing-switches "-agho --group-directories-first")
 
-  (setq dired-dwim-target t)
-  (setq delete-by-moving-to-trash t)
-  (put 'dired-find-alternate-file 'disabled nil)
-  (setq dired-listing-switches "-agho --group-directories-first")
-
-  (setq image-dired-external-viewer "/usr/bin/gimp")
+    (setq image-dired-external-viewer "/usr/bin/gimp")
 #+END_SRC
 
 ** Theme and Modeline
@@ -147,7 +148,6 @@
 #+begin_src emacs-lisp
   (use-package dashboard
     :custom
-    ;;(dashboard-banner-logo-title "With Great Power Comes Great Responsibility!")
     (dashboard-banner-logo-title "Welcom to the Church of Emacs!")
     (dashboard-center-content t)
     (dashboard-items '((agenda)
@@ -1013,6 +1013,7 @@
     "yns" '(yas-new-snippet :which-key "yas-new-snippet")
     "ohs" '(org-hide-src-block-delimiters :which-key "org-hide-src-block-delimiters")
     "obt" '(org-babel-tangle :which-key "org-babel-tangle")
+    "trm" '(treemacs :which-key "treemacs")
     )
 #+END_SRC
 
@@ -1049,7 +1050,8 @@
     (interactive "nTransparency Value 0 - 100 opaque:")
     (set-frame-parameter (selected-frame) 'alpha value))
 
-(transparency 100)
+;;(transparency 100)
+(transparency 95)
 
 ;;(add-to-list 'default-frame-alist '(alpha . (95 . 95)))
 #+END_SRC
@@ -1057,39 +1059,39 @@
 
 #+BEGIN_SRC elisp
 
-(defun efs/org-font-setup ()
-;; Replace list hyphen with dot
-      (font-lock-add-keywords 'org-mode
-                              '(("^ *\\([-]\\) "
-                                 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+  (defun efs/org-font-setup ()
+  ;; Replace list hyphen with dot
+        (font-lock-add-keywords 'org-mode
+                                '(("^ *\\([-]\\) "
+                                   (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-    (let ((background-color (face-attribute 'default :background)))
-      (set-face-attribute 'org-block-begin-line nil
-                          :foreground background-color
-                          :background background-color)
-      (set-face-attribute 'org-block-end-line nil
-                          :foreground background-color
-                          :background background-color))
+      (let ((background-color (face-attribute 'default :background)))
+        (set-face-attribute 'org-block-begin-line nil
+                            :foreground background-color
+                            :background background-color)
+        (set-face-attribute 'org-block-end-line nil
+                            :foreground background-color
+                            :background background-color))
 
-      ;; Set faces for heading levels
-      (dolist (face '((org-level-1 . 1.2)
-                      (org-level-2 . 1.1)
-                      (org-level-3 . 1.05)
-                      (org-level-4 . 1.0)
-                      (org-level-5 . 1.1)
-                      (org-level-6 . 1.1)
-                      (org-level-7 . 1.1)
-                      (org-level-8 . 1.1)))
-        (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+        ;; Set faces for heading levels
+        (dolist (face '((org-level-1 . 1.2)
+                        (org-level-2 . 1.1)
+                        (org-level-3 . 1.05)
+                        (org-level-4 . 1.0)
+                        (org-level-5 . 1.1)
+                        (org-level-6 . 1.1)
+                        (org-level-7 . 1.1)
+                        (org-level-8 . 1.1)))
+          (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
 
-      ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-      (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-      (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-      (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-      (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-      (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-      (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-      (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+        (set-face-attribute 'org-block nil
+                            :foreground nil :inherit 'fixed-pitch)
+        (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+        (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+        (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+        (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+        (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+        (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
   #+END_SRC
 
@@ -1103,7 +1105,8 @@
         org-pretty-entities t
         org-hide-emphasis-markers t
         org-startup-with-inline-images t
-        org-image-actual-width '(200))
+       ;; org-image-actual-width '(200)
+        )
 #+END_src elisp
 
 ** Org-Appear
@@ -1155,8 +1158,8 @@
             visual-fill-column-center-text t)
       (visual-fill-column-mode 1))
 
-    (use-package visual-fill-column
-      :hook (org-mode . efs/org-mode-visual-fill))
+    ;(use-package visual-fill-column
+    ;  :hook (org-mode . efs/org-mode-visual-fill))
 
     (use-package org-bullets
       :after org
