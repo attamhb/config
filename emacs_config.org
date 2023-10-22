@@ -13,6 +13,7 @@
   (setq gc-cons-threshold (* 100 1000 1000))
 #+END_SRC
 
+
 ** Package Archives Configuration and  Use-Package Initialization
 
 #+BEGIN_SRC elisp
@@ -42,18 +43,23 @@
 
 ** Text Display and UI Elements Control
 #+BEGIN_SRC elisp
-(setq inhibit-startup-message t
-          initial-major-mode 'org-mode
-          initial-buffer-choice "~/Dropbox/SCRATCH.org")
-
 (set-face-attribute 'default nil
                         :font "Fira Code Retina"
                         :height 170)
-    (setq-default fill-column 80)
-    (setq-default line-spacing 2)
-    (global-display-line-numbers-mode t)
-    (setq display-line-numbers-type 'relative)
+(setq inhibit-startup-message t
+      initial-major-mode 'org-mode
+      initial-buffer-choice "~/Dropbox/SCRATCH.org"
+      display-line-numbers-type 'relative
+      use-dialog-box nil
+      use-dialog-box nil
+      history-length 25
+      ring-bell-function 'ignore
+      dired-dwim-target t
+      delete-by-moving-to-trash t
+      dired-listing-switches "-agho --group-directories-first"
+      image-dired-external-viewer "/usr/bin/gimp")
     (global-display-fill-column-indicator-mode 0)
+    (global-display-line-numbers-mode t)
     (line-number-mode 1)
     (column-number-mode 0)
     (electric-pair-mode  1)
@@ -61,71 +67,37 @@
     (tool-bar-mode 0)
     (scroll-bar-mode 0)
     (blink-cursor-mode 0)
-    (setq use-dialog-box nil)
     (set-fringe-mode 0)
-    (menu-bar-mode 0)
-    (setq use-dialog-box nil)
     (recentf-mode 1)
-
+    (display-time-mode 1)
     (savehist-mode 1)
     (save-place-mode 1)
-    (setq history-length 25)
     (global-auto-revert-mode 1)
-
-    (setq ring-bell-function 'ignore)
-    (setq dired-dwim-target t)
-    (setq delete-by-moving-to-trash t)
+    (menu-bar-mode 0)
     (put 'dired-find-alternate-file 'disabled nil)
-    (setq dired-listing-switches "-agho --group-directories-first")
-
-    (setq image-dired-external-viewer "/usr/bin/gimp")
+    (setq-default fill-column 80)
+    (setq-default line-spacing 2)
 #+END_SRC
 
 ** Theme and Modeline
 
 #+BEGIN_SRC   elisp
+(use-package doom-themes
+  :init
+  (load-theme 'doom-palenight t))
 (use-package beacon
   :diminish
   :config
-  (beacon-mode 1)
-  :custom
-  (becon-push-mark 35))
-
-(display-time-mode 1)
-
-
+  (beacon-mode 1))
 (use-package nerd-icons
   :defer t)
-
 (use-package doom-modeline
   :init
   (doom-modeline-mode 1))
-
-(use-package doom-themes
-  :init
-  (load-theme 'doom-one t))
-
-
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 #+END_SRC
-
 #+BEGIN_SRC elisp
-
- (defun switch-theme-based-on-time ()
-  (let* ((current-hour (string-to-number (format-time-string "%H")))
-         (night-time (or (>= current-hour 22) (< current-hour 6))))
-    (if night-time
-        (progn
-          (disable-theme 'doom-one) ; Ensure the previous theme is disabled
-          (load-theme 'doom-one t))
-      (progn
-        (disable-theme 'doom-one) ; Ensure the previous theme is disabled
-        (load-theme 'doom-one t)))))
-
-(run-with-timer 0 (* 5 60) 'switch-theme-based-on-time)
-
-
   #+END_SRC
 
 
@@ -133,36 +105,33 @@
 #+BEGIN_SRC elisp
 (make-directory
  (expand-file-name "backups/" user-emacs-directory) t)
-
 (setq backup-directory-alist `(("." . ,(expand-file-name "backups/" user-emacs-directory)))
       backup-by-copying t
       version-control t
       delete-old-versions t
       kept-new-versions 20
-      kept-old-versions 5
-      )
+      kept-old-versions 5)
 #+END_SRC
 
 ** Dashboard
 
 #+begin_src emacs-lisp
-  (use-package dashboard
-    :custom
-    (dashboard-banner-logo-title "Welcom to the Church of Emacs!")
-    (dashboard-center-content t)
-    (dashboard-items '((agenda)
-                       (projects . 5)))
-    (dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
-    (dashboard-set-file-icons t)
-    (dashboard-set-footer nil)
-    (dashboard-set-heading-icons t)
-    (dashboard-set-navigator t)
-    (dashboard-startup-banner 'logo)
-    :config (dashboard-setup-startup-hook))
+(use-package dashboard
+  :custom
+  (dashboard-banner-logo-title "Welcom to the Church of Emacs!")
+  (dashboard-center-content t)
+  (dashboard-items '((agenda)
+                     (projects . 5)))
+  (dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
+  (dashboard-set-file-icons t)
+  (dashboard-set-footer nil)
+  (dashboard-set-heading-icons t)
+  (dashboard-set-navigator t)
+  (dashboard-startup-banner 'logo)
+  :config (dashboard-setup-startup-hook))
 #+end_src
 
 ** Color Display in Text
-
 
 #+begin_src emacs-lisp
   (use-package rainbow-mode
@@ -171,7 +140,6 @@
 #+end_src
 
 ** Parentheses
-
 
 #+begin_src emacs-lisp
   (use-package faces
@@ -284,13 +252,10 @@
     :bind (:map dired-mode-map
                 ("H" . dired-hide-dotfiles-mode)))
 
-
   (use-package dired-subtree
     :after dired
     :bind (:map dired-mode-map
                 ("<tab>" . dired-subtree-toggle)))
-
-
   (use-package dired-narrow
     :ensure nil
     :bind (("C-c C-n" . dired-narrow)
@@ -306,30 +271,18 @@
 #+END_SRC
 
 
-
 #+BEGIN_SRC elisp
-
-    (setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
-
-;;    (setq make-backup-files nil)
-
-    (make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
-
-    (setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
+(setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
+(setq make-backup-files nil)
+(make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
+(setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
           auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
-
-  (setq create-lockfiles nil)
-
-  (setq projectile-known-projects-file
+(setq create-lockfiles nil)
+(setq projectile-known-projects-file
         (expand-file-name "tmp/projectile-bookmarks.eld" user-emacs-directory)
         lsp-session-file (expand-file-name "tmp/.lsp-session-v1" user-emacs-directory))
-
-
 (setq user-emacs-directory (expand-file-name "~/.cache/emacs"))
-
 (use-package no-littering)
-
-
 #+END_SRC
 
 * Advanced Configuration
@@ -359,11 +312,6 @@
   (use-package holidays
     :ensure nil
     :custom
-    (holiday-bahai-holidays nil)
-    (holiday-hebrew-holidays nil)
-    (holiday-islamic-holidays nil)
-    (holiday-oriental-holidays nil)
-    (holiday-christian-holidays nil)
     (holiday-general-holidays
      '((holiday-fixed 1 1 "New Year's Day")
        (holiday-fixed 2 14 "Valentine's Day")
@@ -375,7 +323,6 @@
 #+end_src
 
 ** Documentation
-
 
 #+begin_src emacs-lisp
   (use-package helpful
@@ -395,8 +342,7 @@
     ([remap describe-command] . helpful-command))
 #+end_src
 
-** EditorConfig
-
+** Editorconfig
 
 #+begin_src emacs-lisp
   (use-package editorconfig
@@ -421,7 +367,6 @@
 #+end_src
 
 ** Package Menu
-
 
 #+begin_src emacs-lisp
   (use-package paradox)
@@ -505,20 +450,14 @@
 
 ** Windows
 
-
-
-
-
 #+begin_src emacs-lisp
   (use-package vertico
-    ;; :straight (:files (:defaults "extensions/*"))
     :init (vertico-mode)
     :bind (:map vertico-map
                 ("C-<backspace>" . vertico-directory-up))
     :custom (vertico-cycle t)
     :custom-face (vertico-current ((t (:background "#1d1f21")))))
 #+end_src
-
 
 #+begin_src emacs-lisp
   (use-package marginalia
@@ -528,13 +467,11 @@
     (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
 #+end_src
 
-
 #+begin_src emacs-lisp
   (use-package all-the-icons-completion
     :after (marginalia all-the-icons)
     :hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
 #+end_src
-
 
 #+begin_src emacs-lisp
   (use-package orderless
@@ -544,15 +481,12 @@
     (completion-styles '(orderless)))
 #+end_src
 
-
-
 #+begin_src emacs-lisp
   (use-package embark
     :bind ("C-." . embark-act))
 #+end_src
 
 ** Fly Spell
-
 
 #+begin_src emacs-lisp
   (use-package flyspell
@@ -570,13 +504,11 @@
 
 ** Spell Checker
 
-
 #+begin_src emacs-lisp
   (use-package ispell)
 #+end_src
 
 ** Grammar Checker
-
 
 #+begin_src emacs-lisp
   (use-package lsp-ltex
@@ -590,11 +522,9 @@
 
 #+BEGIN_SRC elisp
 (use-package sly)
-
 (use-package no-littering
   :diminish
   :defer t)
-
   (setq ispell-dictionary "english")
 #+END_SRC
 
@@ -722,24 +652,17 @@
     :custom
     (company-minimum-prefix-length 1)
     (company-idle-delay 0.0))
-
-
-
   (use-package company-box
     :hook (company-mode . company-box-mode))
-
   (use-package company-box
     :if (display-graphic-p)
     :after company
     :hook (company-mode . company-box-mode))
-
-
   (use-package company-prescient
     :after company
     :config
     (company-prescient-mode 1)
     (prescient-persist-mode))
-
   (global-company-mode)
 #+end_src
 
@@ -765,7 +688,6 @@
   (use-package consult-projectile
     :after (consult projectile)
     :commands (consult-projectile))
-
 
 (use-package ibuffer-projectile
     :after ibuffer
@@ -832,7 +754,6 @@
     (setq yas-snippet-dirs '("~/Dropbox/config/emacs_snippets/"))
     (yas-reload-all)
     (yas-global-mode 1))
-
 
   (define-key yas-minor-mode-map (kbd "<tab>") nil)
   (define-key yas-minor-mode-map (kbd "TAB") nil)
@@ -1028,7 +949,6 @@
                    (float-time
                    (time-subtract after-init-time before-init-time)))
            gcs-done))
-
 (add-hook 'emacs-startup-hook #'efs/display-startup-time)
 #+END_SRC
 
@@ -1045,12 +965,10 @@
                       ;; Also handle undocumented (<active> <inactive>) form.
                       ((numberp (cadr alpha)) (cadr alpha))) 95)
            '(95 . 95) '(100 . 100)))))
-
 (defun transparency (value)
     (interactive "nTransparency Value 0 - 100 opaque:")
     (set-frame-parameter (selected-frame) 'alpha value))
 
-;;(transparency 100)
 (transparency 95)
 
 ;;(add-to-list 'default-frame-alist '(alpha . (95 . 95)))
@@ -1059,8 +977,7 @@
 
 #+BEGIN_SRC elisp
 
-  (defun efs/org-font-setup ()
-  ;; Replace list hyphen with dot
+(defun efs/org-font-setup ()
         (font-lock-add-keywords 'org-mode
                                 '(("^ *\\([-]\\) "
                                    (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
@@ -1119,7 +1036,6 @@
 ** Org-Babel
 
 #+begin_src elisp
-
     (org-babel-do-load-languages
      'org-babel-load-languages
      '(
@@ -1132,48 +1048,33 @@
        (matlab . t)
        (sql . t)
        (emacs-lisp . t)))
-
     (setq org-babel-python-command "python3")
-
 #+END_src elisp
 
 ** Org-Font-Setup Function
 
 ** Org-Setup
 #+begin_src elisp
-    (use-package org
-      :hook (org-mode . efs/org-mode-setup)
-      :config
-      (setq org-ellipsis " ▾")
-      (efs/org-font-setup))
-
+(use-package org
+  :hook (org-mode . efs/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾")
+  (efs/org-font-setup))
 #+END_src elisp
 
 ** Org Bullets
 
 #+begin_src elisp
-
-    (defun efs/org-mode-visual-fill ()
-      (setq visual-fill-column-width 100
-            visual-fill-column-center-text t)
-      (visual-fill-column-mode 1))
-
-    ;(use-package visual-fill-column
-    ;  :hook (org-mode . efs/org-mode-visual-fill))
-
     (use-package org-bullets
       :after org
       :hook (org-mode . org-bullets-mode)
       :custom
       (org-bullets-bullet-list '("◉" "●" "○" "●" "○" "●" "○" "●")))
-
-
 #+end_src
 
 * Org Roam
 
 #+BEGIN_SRC elisp
-
   (use-package org-roam
   :ensure t
   :demand t  ;; Ensure org-roam is loaded by default
@@ -1385,8 +1286,6 @@ capture was not aborted."
             ((org-agenda-overriding-header "Cancelled Projects")
              (org-agenda-files org-agenda-files)))))))
 
-
-
   #+END_SRC
 
 *
@@ -1427,13 +1326,11 @@ capture was not aborted."
   (setq lsp-keymap-prefix "C-c l")) ;; Or 'C-l', 's-l'
 #+end_src
 
-
 ** LSP Ivy Integration
 #+begin_src elisp
 (use-package lsp-ivy
   :after lsp-mode)
 #+end_src
-
 
 ** LSP UI Configuration
 #+begin_src elisp
@@ -1445,7 +1342,6 @@ capture was not aborted."
   :config
   (setq lsp-ui-doc-position 'bottom))
 #+end_src
-
 
 ** LSP Treemacs Integration
 #+begin_src elisp
@@ -1464,13 +1360,11 @@ capture was not aborted."
 
 ** EPUB
 
-
 #+begin_src emacs-lisp
   (use-package nov
     :mode ("\\.epub\\'" . nov-mode)
     :custom (nov-text-width 75))
 #+end_src
-
 
 ** Gnuplot
 
@@ -1515,9 +1409,6 @@ capture was not aborted."
   (markdown-header-face-4 ((t (:inherit markdown-header-face :height 1.2))))
   :init
   (setq markdown-command "multimarkdown"))
-
-
-
 #+END_SRC
 
 #+begin_src emacs-lisp
@@ -1525,7 +1416,6 @@ capture was not aborted."
     :delight "μ"
     :mode ("\\.\\(md\\|markdown\\)\\'")
     :custom (markdown-command "/usr/bin/pandoc"))
-
   (use-package markdown-preview-mode
     :commands markdown-preview-mode)
 #+end_src
@@ -1622,8 +1512,6 @@ capture was not aborted."
     :config
     (pyvenv-mode 1))
 
-
-
 #+END_SRC
 
 ** SQL
@@ -1712,8 +1600,6 @@ capture was not aborted."
 
   (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
 
-
-
   (use-package tex
     :ensure auctex
     :preface
@@ -1766,7 +1652,6 @@ capture was not aborted."
 
 #+BEGIN_SRC elisp
 (use-package company-math)
-
 (use-package company-auctex
 :ensure t
 :init
@@ -1774,27 +1659,22 @@ capture was not aborted."
 
 (use-package latex-preview-pane
   :ensure t)
-
 (use-package magic-latex-buffer
   :ensure t
   :hook (TeX-update-style . magic-latex-buffer))
 
-    ;; :hook (LaTeX-mode . company-math)
 #+END_SRC
-
 
 #+BEGIN_SRC elisp
 (use-package laas
   :hook (LaTeX-mode . lass-mode))
 #+END_SRC
 
-
 #+BEGIN_SRC elisp
 (add-hook 'TeX-mode-hook #'TeX-fold-mode)
 (add-hook 'TeX-language-dk-hook
           (lambda () (ispell-change-dictionary "english")))
 
-;; Enable parse on load and save.
 (setq TeX-parse-self t)
 (setq TeX-auto-save t)
 
@@ -1805,7 +1685,6 @@ capture was not aborted."
 (add-hook 'TeX-mode-hook 'turn-on-reftex)
 #+END_SRC
 
-
 #+begin_src emacs-lisp
   (use-package reftex
     :ensure nil
@@ -1813,7 +1692,6 @@ capture was not aborted."
     (reftex-save-parse-info t)
     (reftex-use-multiple-selection-buffers t))
 #+end_src
-
 
 #+begin_src emacs-lisp
   (use-package bibtex
@@ -1833,9 +1711,7 @@ capture was not aborted."
   :commands magit-status
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-
 (use-package forge)
-
   (use-package git-gutter
     :defer 0.3
     :delight
@@ -1854,4 +1730,11 @@ capture was not aborted."
            (overlay-put ov 'invisible t)))))
 
 (org-hide-src-block-delimiters)
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(use-package org-tree-slide
+  :custom
+  (org-image-actual-width nil))
+
 #+END_SRC
