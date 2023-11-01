@@ -44,8 +44,7 @@
 ** Text Display and UI Elements Control
 #+BEGIN_SRC elisp
   (set-face-attribute 'default nil
-                          ;;:font "Fira Code Retina"
-                          :font "JetBrains Mono"
+                          :font "Fira Code Retina"
                           :height 170)
   (setq inhibit-startup-message t
         initial-major-mode 'org-mode
@@ -927,7 +926,7 @@
     "cc" '(TeX-command-run-all :which-key "Tex-command-run-all")
     "cb" '(kill-this-buffer :which-key "kill-this-buffer")
     "cn" '(global-display-line-numbers-mode :which-key "global-display-number-mode")
-    ;; "tm" '(vterm :which-key "vterm")
+    "tm" '(vterm :which-key "vterm")
     "ss" '(sly :which-key "sly")
     "cl" '(global-display-fill-column-indicator-mode :which-key "global-display-fill-column-indicator-mode")
     "bm" '(blacken-mode :which-key "blacken-mode")
@@ -1500,15 +1499,15 @@ capture was not aborted."
     (python-shell-interpreter "python3")
     :config
     )
-;;
-;;   (use-package elpy
-;;     :ensure t
-;;     :init
-;;     (elpy-enable)
-;;     :config
-;;     ;; Use IPython for REPL
-;;     (setq elpy-shell-interactive-shell-command "ipython3")
-;;     (setq elpy-shell-interactive-shell-args '("--simple-prompt" "-i")))
+
+  (use-package elpy
+    :ensure t
+    :init
+    (elpy-enable)
+    :config
+    ;; Use IPython for REPL
+    (setq elpy-shell-interactive-shell-command "ipython3")
+    (setq elpy-shell-interactive-shell-args '("--simple-prompt" "-i")))
 
   (use-package pyvenv
     :defer t
