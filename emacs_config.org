@@ -14,8 +14,6 @@
 #+END_SRC
 
 
-** Package Archives Configuration and  Use-Package Initialization
-
 #+BEGIN_SRC elisp
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
   (when (file-exists-p custom-file)
@@ -44,8 +42,8 @@
 ** Text Display and UI Elements Control
 #+BEGIN_SRC elisp
   (set-face-attribute 'default nil
-                          ;;:font "Fira Code Retina"
-                          :font "JetBrains Mono"
+                          :font "Fira Code Retina"
+                          ;; :font "JetBrains Mono"
                           :height 170)
   (setq inhibit-startup-message t
         initial-major-mode 'org-mode
@@ -100,8 +98,6 @@
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 #+END_SRC
-#+BEGIN_SRC elisp
-  #+END_SRC
 
 
 ** Backup Settings
@@ -205,9 +201,9 @@
       (cwm-use-vertical-padding t)
       :config (centered-window-mode))
 
-(use-package switch-window
-    :bind (("C-x o" . switch-window)
-           ("C-x w" . switch-window-then-swap-buffer)))
+;; (use-package switch-window
+;;     :bind (("C-x o" . switch-window)
+;;            ("C-x w" . switch-window-then-swap-buffer)))
 
 (use-package winner
     :ensure nil
@@ -373,7 +369,7 @@
 ** Package Menu
 
 #+begin_src emacs-lisp
-  (use-package paradox)
+  ;; (use-package paradox)
 #+end_src
 
 ** Paste
@@ -818,8 +814,8 @@
 (use-package vterm
   :defer t
   :config
-  (setq explicit-shell-file-name "bash")
-  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
+  (setq explicit-shell-file-name "zsh"))
+  ;;(setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
 #+END_SRC
 
 ** Terminal Modes Line Numbers Configuration
@@ -1462,10 +1458,8 @@ capture was not aborted."
     :custom
     (lsp-pyright-python-executable-cmd "python3")
     (lsp-pyright-venv-path "~/.cache/pypoetry/virtualenvs/"))
-#+end_src
 
 
-#+begin_src emacs-lisp
   (use-package py-isort
     :hook ((before-save . py-isort-before-save)
            (python-mode . pyvenv-mode)))
@@ -1476,45 +1470,29 @@ capture was not aborted."
     :after python
     :config (pyvenv-tracking-mode))
 
-  (use-package pyenv-mode
-    :hook ((python-mode . pyenv-mode)
-           (projectile-switch-project . projectile-pyenv-mode-set))
-    :custom (pyenv-mode-set "3.8.5")
-    :preface
-    (defun projectile-pyenv-mode-set ()
-      "Set pyenv version matching project name."
-      (let ((project (projectile-project-name)))
-        (if (member project (pyenv-mode-versions))
-            (pyenv-mode-set project)
-          (pyenv-mode-unset)))))
 #+end_src
 
 #+BEGIN_SRC   elisp
-  (use-package python-mode
-    :hook
-    (python-mode . flycheck-mode)
-    (python-mode . company-mode)
-    (python-mode . blacken-mode)
-    (python-mode . yas-minor-mode)
-    :custom
-    (python-shell-interpreter "python3")
-    :config
-    )
-;;
-;;   (use-package elpy
-;;     :ensure t
-;;     :init
-;;     (elpy-enable)
-;;     :config
-;;     ;; Use IPython for REPL
-;;     (setq elpy-shell-interactive-shell-command "ipython3")
-;;     (setq elpy-shell-interactive-shell-args '("--simple-prompt" "-i")))
+    (use-package python-mode
+      :hook
+      (python-mode . flycheck-mode)
+      (python-mode . company-mode)
+      (python-mode . blacken-mode)
+      (python-mode . yas-minor-mode)
+      :custom
+      (python-shell-interpreter "ipython3")
+      :config
+      )
+  ;;
+  ;;   (use-package elpy
+  ;;     :ensure t
+  ;;     :init
+  ;;     (elpy-enable)
+  ;;     :config
+  ;;     ;; Use IPython for REPL
+  ;;     (setq elpy-shell-interactive-shell-command "ipython3")
+  ;;     (setq elpy-shell-interactive-shell-args '("--simple-prompt" "-i")))
 
-  (use-package pyvenv
-    :defer t
-    :hook (pyvenv-mode . python-mode)
-    :config
-    (pyvenv-mode 1))
 
 #+END_SRC
 
