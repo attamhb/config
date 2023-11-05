@@ -42,8 +42,8 @@
 ** Text Display and UI Elements Control
 #+BEGIN_SRC elisp
   (set-face-attribute 'default nil
-                          :font "Fira Code Retina"
-                          ;; :font "JetBrains Mono"
+                          ;; :font "Fira Code Retina"
+                          :font "JetBrains Mono"
                           :height 170)
   (setq inhibit-startup-message t
         initial-major-mode 'org-mode
