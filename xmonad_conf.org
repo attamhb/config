@@ -39,12 +39,12 @@ myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = True
 myClickJustFocuses :: Bool
 myClickJustFocuses = False
-myBorderWidth   = 1
+myBorderWidth   = 0
 myModMask       = mod4Mask
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9", "0"]
 --myWorkspaces    = ["1","2","3","4","5"]
 myNormalBorderColor  = "#8f8b7f" --"#42f5e6"
-myFocusedBorderColor = "#712a91" -- "#ff0000"
+myFocusedBorderColor = "#00bfff" -- "#ff0000"
     ------------------------------------------------------------------------
 #+END_SRC
 
@@ -59,20 +59,22 @@ myFocusedBorderColor = "#712a91" -- "#ff0000"
       , ((modm .|. shiftMask, xK_p     ), spawn "j4-dmenu-desktop")
   --------------------------------------------------------------------
       , ((modm .|. shiftMask, xK_h     ), spawn "alacritty")
-      , ((modm .|. shiftMask, xK_x     ), spawn "lxappearance")
-      , ((modm .|. shiftMask, xK_v     ), spawn "thunderbird")
-      , ((modm .|. shiftMask, xK_f     ), spawn "thunar")
-      , ((modm .|. shiftMask, xK_z     ), spawn "zoom")
+      --, ((modm .|. shiftMask, xK_x     ), spawn "lxappearance")
+      --, ((modm .|. shiftMask, xK_v     ), spawn "thunderbird")
+      --, ((modm .|. shiftMask, xK_f     ), spawn "thunar")
+      --, ((modm .|. shiftMask, xK_z     ), spawn "zoom")
       , ((modm .|. shiftMask, xK_d     ), spawn "emacs")
       , ((modm .|. shiftMask, xK_s     ), spawn "inkscape")
       , ((modm .|. shiftMask, xK_a     ), spawn "gnome-calendar")
       , ((modm .|. shiftMask, xK_g     ), spawn "chromium --kiosk")
-      , ((modm .|. shiftMask, xK_b     ), spawn "xmobar -x ~/.xmonad/xmobarrc")
+      --, ((modm .|. shiftMask, xK_b     ), spawn "xmobar -x ~/.xmonad/xmobarrc")
       , ((modm,               xK_b     ), spawn "pkill xmobar")
       , ((modm,               xK_g     ), spawn "brave --kiosk")
       , ((modm,               xK_v     ), spawn "virtualbox")
-      , ((modm,               xK_z     ), spawn "zathura")
-      , ((modm,               xK_o     ), spawn "okular")
+      , ((modm,               xK_o     ), spawn "blueman-manager")
+      , ((modm .|. shiftMask, xK_o     ), spawn "pavucontrol")
+      , ((modm,               xK_y     ), spawn "nitrogen")
+      , ((modm .|. shiftMask, xK_y     ), spawn "arandr")
       , ((modm,               xK_i     ), spawn "gimp")
       , ((modm,               xK_x     ), spawn "flameshot gui")
       , ((modm .|. shiftMask, xK_b     ), spawn "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --tint 0x191970 --height 18; nm-applet &")

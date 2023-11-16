@@ -44,7 +44,7 @@
   (set-face-attribute 'default nil
                           ;; :font "Fira Code Retina"
                           :font "JetBrains Mono"
-                          :height 170)
+                          :height 180)
   (setq inhibit-startup-message t
         initial-major-mode 'org-mode
         initial-buffer-choice "~/Dropbox/SCRATCH.org"
@@ -820,14 +820,20 @@
 
 ** Terminal Modes Line Numbers Configuration
 #+BEGIN_SRC elisp
-(dolist (mode '(term-mode-hook
-                shell-mode-hook
-                eshell-mode-hook
-                vterm-mode-hook
-                pdf-view-mode-hook
-                treemacs-mode-hook))
+      (dolist (mode '(term-mode-hook
+                      shell-mode-hook
+                      eshell-mode-hook
+                      vterm-mode-hook
+                      pdf-view-mode-hook
+                      treemacs-mode-hook))
+        (add-hook mode (lambda ()
+                         (display-line-numbers-mode -1))))
+
+(dolist (mode '(pdf-view-mode-hook))
   (add-hook mode (lambda ()
-                   (display-line-numbers-mode -1))))
+                   (display-line-numbers-mode -1)
+                   (pdf-view-midnight-minor-mode t)
+                   (pdf-view-fit-width-to-window))))
 #+END_SRC
 
 * Evil Mode
@@ -969,7 +975,7 @@
     (interactive "nTransparency Value 0 - 100 opaque:")
     (set-frame-parameter (selected-frame) 'alpha value))
 
-(transparency 95)
+(transparency 100)
 
 ;;(add-to-list 'default-frame-alist '(alpha . (95 . 95)))
 #+END_SRC
