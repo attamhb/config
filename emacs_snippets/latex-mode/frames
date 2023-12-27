@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name:frames_beamer
+# key:fm
+# --
+\begin{frame}{$1}
+$0
+\end{frame}
